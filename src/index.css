@@ -1,0 +1,682 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-navy: #051746;
+  --color-navy-deep: #030e2e;
+  --color-navy-lift: #0a2466;
+  --color-signal: #f6620d;
+  --font-sans: 'Montserrat Variable', 'Montserrat', system-ui, sans-serif;
+  --font-ar: 'Noto Kufi Arabic Variable', 'Noto Kufi Arabic', 'Montserrat Variable', system-ui, sans-serif;
+  --ease-cine: cubic-bezier(0.16, 1, 0.3, 1);
+  --breakpoint-3xl: 1800px;
+}
+
+/* ---------- base ---------- */
+html {
+  background: var(--color-navy);
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--color-navy);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+html[dir='rtl'] body {
+  font-family: var(--font-ar);
+}
+.latin {
+  font-family: var(--font-sans);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+[dir='rtl'] p.latin,
+[dir='rtl'] ul.latin {
+  text-align: right;
+}
+::selection {
+  background: var(--color-signal);
+  color: #fff;
+}
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+button {
+  cursor: pointer;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ---------- layout ---------- */
+.wrap {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 1680px;
+  padding-inline: clamp(1.25rem, 5vw, 5.5rem);
+}
+.section {
+  padding-block: clamp(5rem, 12vw, 11rem);
+  position: relative;
+}
+.on-white {
+  background: #fff;
+  color: var(--color-navy);
+}
+
+/* Tall scroll-driven scenes: sticky stage inside a tall track. Collapses to a normal block without motion. */
+.scrolly {
+  position: relative;
+}
+.scrolly-pin {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+}
+.js-motion .scrolly {
+  height: var(--scrolly-h, 250vh);
+}
+.js-motion .scrolly-pin {
+  position: sticky;
+  top: 0;
+  /* Tall enough for the screen with the address bar hidden, so no strip of the next
+     section shows under the stage. The content inside is laid out for the smaller
+     (bar visible) height, so nothing important sits under the bar. */
+  height: 100vh;
+  height: 100lvh;
+  overflow: hidden;
+}
+.js-motion .scrolly-pin > .wrap,
+.js-motion .scrolly-pin > canvas {
+  height: 100vh;
+  height: 100svh;
+  align-self: start;
+}
+/* Phones: give each pinned stage its own compositor layer so it holds still while scrolling. */
+@media (pointer: coarse) {
+  .scrolly-pin,
+  .cm-identity-screen,
+  .services-pinned-stage {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+  /* A blurred glass header has to be re-blurred on every frame the scene behind it changes.
+     On phones it becomes a solid pill instead. */
+  header .backdrop-blur-md {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: rgb(5 23 70 / 0.94);
+  }
+}
+
+/* ---------- type ---------- */
+.t-hero {
+  font-size: 19vw;
+  line-height: 0.86;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+@media (min-width: 1024px) {
+  .t-hero {
+    font-size: min(10.6vw, 19vh);
+  }
+}
+.t-display {
+  font-size: clamp(2.5rem, 7vw, 7rem);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.t-title {
+  font-size: clamp(1.75rem, 3.6vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+.t-lead {
+  font-size: clamp(1.05rem, 1.45vw, 1.4rem);
+  line-height: 1.55;
+  font-weight: 300;
+}
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.thin {
+  font-weight: 300;
+}
+[dir='rtl'] .t-hero {
+  font-size: 17vw;
+  line-height: 1.22;
+  letter-spacing: 0;
+}
+@media (min-width: 1024px) {
+  [dir='rtl'] .t-hero {
+    font-size: min(7.4vw, 14.5vh);
+  }
+}
+[dir='rtl'] .t-display {
+  line-height: 1.28;
+  letter-spacing: 0;
+  font-size: clamp(2.2rem, 5.8vw, 5.8rem);
+}
+[dir='rtl'] .t-title {
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+[dir='rtl'] .t-lead {
+  line-height: 1.9;
+}
+[dir='rtl'] .eyebrow {
+  letter-spacing: 0;
+  font-size: 0.85rem;
+}
+[dir='rtl'] .latin.eyebrow,
+[dir='rtl'] .latin .eyebrow {
+  letter-spacing: 0.34em;
+  font-size: 0.7rem;
+}
+
+/* masked line reveal */
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.08em;
+  margin-block: -0.08em;
+}
+[dir='rtl'] .line-mask {
+  padding-block: 0.2em;
+  margin-block: -0.2em;
+}
+.line-inner {
+  display: block;
+  will-change: transform;
+}
+
+/* ---------- reveal initial states (only when motion is on) ---------- */
+.js-motion [data-reveal='up'] {
+  opacity: 0;
+  transform: translateY(42px);
+}
+.js-motion [data-reveal='blur'] {
+  opacity: 0;
+  filter: blur(14px);
+  transform: scale(1.04);
+}
+.js-motion [data-reveal='clip'] {
+  clip-path: inset(0 0 100% 0);
+}
+.js-motion [data-reveal='lines'] .line-inner {
+  transform: translateY(115%);
+}
+.js-motion [data-reveal='rule'] {
+  transform: scaleX(0);
+}
+[data-reveal='rule'] {
+  transform-origin: left center;
+}
+[dir='rtl'] [data-reveal='rule'] {
+  transform-origin: right center;
+}
+
+/* ---------- signal sphere ---------- */
+.sphere {
+  border-radius: 9999px;
+  background: radial-gradient(circle at 34% 28%, #ffc296 0%, #f6620d 42%, #b8430a 100%);
+  box-shadow:
+    0 0 24px rgb(246 98 13 / 0.55),
+    0 0 80px rgb(246 98 13 / 0.28);
+}
+.sphere-flat {
+  border-radius: 9999px;
+  background: var(--color-signal);
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.05rem 1.6rem;
+  border-radius: 9999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    color 0.4s var(--ease-cine),
+    border-color 0.4s var(--ease-cine);
+}
+[dir='rtl'] .btn {
+  letter-spacing: 0;
+  font-size: 0.92rem;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 100%;
+  border-radius: inherit;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.55s var(--ease-cine);
+}
+[dir='rtl'] .btn::before {
+  transform-origin: right center;
+}
+.btn:hover::before,
+.btn:focus-visible::before {
+  transform: scaleX(1);
+}
+.btn-signal {
+  background: var(--color-signal);
+  color: #fff;
+}
+.btn-signal::before {
+  background: #fff;
+}
+.btn-signal:hover,
+.btn-signal:focus-visible {
+  color: var(--color-navy);
+}
+.btn-ghost {
+  border: 1px solid rgb(255 255 255 / 0.3);
+  color: #fff;
+}
+.btn-ghost::before {
+  background: var(--color-signal);
+}
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  border-color: var(--color-signal);
+}
+.on-white .btn-ghost {
+  border-color: rgb(5 23 70 / 0.3);
+  color: var(--color-navy);
+}
+.on-white .btn-ghost:hover {
+  color: #fff;
+  border-color: var(--color-signal);
+}
+.btn .arrow {
+  transition: transform 0.5s var(--ease-cine);
+}
+.btn:hover .arrow {
+  transform: translate(3px, -3px);
+}
+[dir='rtl'] .btn .arrow {
+  transform: scaleX(-1);
+}
+[dir='rtl'] .btn:hover .arrow {
+  transform: scaleX(-1) translate(3px, -3px);
+}
+
+/* text link with travelling signal dot */
+.link-signal {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.link-signal::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--color-signal);
+  transition: transform 0.5s var(--ease-cine);
+}
+.link-signal:hover::before {
+  transform: scale(1.8);
+}
+
+/* ---------- header nav ---------- */
+.nav-link {
+  position: relative;
+  padding-block: 0.4rem;
+  transition: color 0.3s;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: -2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--color-signal);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition:
+    transform 0.45s var(--ease-cine),
+    opacity 0.3s,
+    width 0.45s var(--ease-cine);
+}
+[dir='rtl'] .nav-link::after {
+  transform: translateX(10px);
+}
+.nav-link:hover::after,
+.nav-link[aria-current]::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+.nav-link:hover::after {
+  width: 100%;
+  height: 2px;
+  bottom: 0;
+}
+
+/* ---------- page + language transitions ---------- */
+.page-enter {
+  animation: page-in 0.7s var(--ease-cine) both;
+}
+/* Opacity only: a transform on <main> would capture every position: fixed stage inside it. */
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
+.lang-fade {
+  transition:
+    opacity 0.28s ease,
+    filter 0.28s ease;
+}
+.lang-fade.is-switching {
+  opacity: 0;
+  filter: blur(6px);
+}
+
+/* ---------- form ---------- */
+.field {
+  position: relative;
+  display: block;
+}
+.field input,
+.field textarea {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgb(255 255 255 / 0.22);
+  padding: 1.6rem 0 0.7rem;
+  font-size: 1.05rem;
+  color: #fff;
+  outline: none;
+  border-radius: 0;
+  resize: none;
+  font-family: inherit;
+}
+.field label {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 1.55rem;
+  font-size: 1.05rem;
+  color: rgb(255 255 255 / 0.55);
+  pointer-events: none;
+  transform-origin: left top;
+  transition:
+    transform 0.4s var(--ease-cine),
+    color 0.3s;
+}
+[dir='rtl'] .field label {
+  transform-origin: right top;
+}
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label,
+.field textarea:focus + label,
+.field textarea:not(:placeholder-shown) + label {
+  transform: translateY(-1.45rem) scale(0.68);
+  color: var(--color-signal);
+}
+.field .bar {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-signal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-cine);
+}
+[dir='rtl'] .field .bar {
+  transform-origin: right;
+}
+.field:focus-within .bar {
+  transform: scaleX(1);
+}
+.field[data-invalid='true'] input {
+  border-bottom-color: var(--color-signal);
+}
+.chip {
+  position: relative;
+  padding: 0.7rem 1.15rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  font-size: 0.85rem;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    border-color 0.4s,
+    transform 0.4s var(--ease-cine);
+}
+.chip::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 120%;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: var(--color-signal);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.55s var(--ease-cine);
+}
+.chip:hover {
+  border-color: var(--color-signal);
+}
+.chip[aria-pressed='true'] {
+  border-color: var(--color-signal);
+}
+.chip[aria-pressed='true']::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* ---------- accordion ---------- */
+.acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.6s var(--ease-cine);
+}
+.acc-panel > div {
+  overflow: hidden;
+}
+.acc-item[data-open='true'] .acc-panel {
+  grid-template-rows: 1fr;
+}
+.acc-line {
+  transform: scaleX(0.999);
+  transform-origin: left;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.18;
+  transition:
+    opacity 0.4s,
+    height 0.4s;
+}
+.acc-item[data-open='true'] + .acc-line,
+.acc-item:hover + .acc-line {
+  opacity: 1;
+  background: var(--color-signal);
+}
+.acc-plus::before,
+.acc-plus::after {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform 0.5s var(--ease-cine);
+}
+.acc-plus::after {
+  transform: rotate(90deg);
+}
+.acc-item[data-open='true'] .acc-plus::after {
+  transform: rotate(0deg);
+}
+.acc-item[data-open='true'] .acc-plus {
+  color: var(--color-signal);
+}
+
+/* ---------- misc ---------- */
+.hairline {
+  height: 1px;
+  background: rgb(255 255 255 / 0.14);
+}
+.on-white .hairline {
+  background: rgb(5 23 70 / 0.14);
+}
+.muted {
+  color: rgb(255 255 255 / 0.66);
+}
+.on-white .muted {
+  color: rgb(5 23 70 / 0.7);
+}
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+.spin-slow {
+  animation: spin 28s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes scrollcue {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(220%);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.dash-flow {
+  stroke-dasharray: 4 10;
+  animation: dash 1.6s linear infinite;
+}
+@keyframes dash {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+.pulse-ring {
+  animation: pulse-ring 2.6s var(--ease-cine) infinite;
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+.on-white .chip {
+  border-color: rgb(5 23 70 / 0.25);
+}
+.on-white .chip[aria-pressed='true'] {
+  color: #fff;
+  border-color: var(--color-signal);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile hero: the film runs without a colour wash, so the copy carries its own soft shadow. */
+@media (max-width: 1023px) {
+  .hero-legible {
+    text-shadow:
+      0 1px 2px rgb(3 14 46 / 0.35),
+      0 4px 28px rgb(3 14 46 / 0.6);
+  }
+}
+
+/* Nothing decorative may widen the page: a wider document shrinks everything on phones. */
+html {
+  overflow-x: clip;
+}
+#main {
+  overflow-x: clip;
+}
+/* Comfortable tap targets on touch screens. */
+@media (pointer: coarse) {
+  .tap {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Belief section background. Desktop keeps the lit peak on the left; phones and portrait
+   tablets get a crop with open sky behind the copy. Original: assets-src/backgrounds/belief-mountain.png */
+.belief-bg {
+  background: url('/images/belief-mountain.webp') left center / cover no-repeat;
+}
+@media (max-width: 1023px) and (orientation: portrait) {
+  .belief-bg {
+    background-image: url('/images/belief-mountain-mobile.webp');
+    background-position: center;
+  }
+}

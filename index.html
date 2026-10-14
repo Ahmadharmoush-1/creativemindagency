@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Creative Mind — Mind Made Visible</title>
+    <meta
+      name="description"
+      content="Creative Mind is a marketing and creative agency. Brands, campaigns and digital systems designed to move your business forward."
+    />
+    <meta name="theme-color" content="#051746" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Creative Mind" />
+    <meta property="og:title" content="Creative Mind — Mind Made Visible" />
+    <meta
+      property="og:description"
+      content="We don't decorate brands. We engineer them. Brands, campaigns, systems, funnels, automations, digital experiences and growth engines."
+    />
+    <meta property="og:image" content="/media/hero-poster.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Hero poster: preload only the copy this screen will actually show. -->
+    <link rel="preload" as="image" href="/media/hero-poster-mobile.webp" fetchpriority="high" media="(max-width: 1023px) and (orientation: portrait)" />
+    <link rel="preload" as="image" href="/media/hero-poster.webp" fetchpriority="high" media="(min-width: 1024px), (orientation: landscape)" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Creative Mind",
+        "slogan": "Mind Made Visible",
+        "description": "Marketing and creative agency building brands, campaigns, systems, funnels, automations, digital experiences and growth engines."
+      }
+    </script>
+    <script>
+      // Set language, direction and motion preference before first paint to avoid layout shift.
+      ;(function () {
+        var d = document.documentElement
+        try {
+          var l = localStorage.getItem('cm-lang')
+          if (l === 'ar') {
+            d.lang = 'ar'
+            d.dir = 'rtl'
+          }
+        } catch (e) {}
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('js-motion')
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Creative Mind — Mind Made Visible. This site needs JavaScript to run.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

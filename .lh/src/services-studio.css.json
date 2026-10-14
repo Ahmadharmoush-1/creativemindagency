@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/services-studio.css",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1791808950627,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1791808950627,
+            "name": "Commit-0",
+            "content": "/* Add services-studio to the pinned stage and the mobile Services section. */\r\n.services-studio {\r\n  isolation: isolate;\r\n  background-color: #101923;\r\n  background-image:\r\n    radial-gradient(ellipse at 78% 42%, rgba(246,98,13,.14), transparent 47%),\r\n    linear-gradient(115deg, #101923 12%, #192632 54%, #101820 100%);\r\n}\r\n.services-studio::before {\r\n  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;\r\n  opacity: .065;\r\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' d='M0 0h180v180H0z'/%3E%3C/svg%3E\");\r\n}\r\n.services-studio::after {\r\n  content: ''; position: absolute; inset: 70% 0 0; z-index: -1; pointer-events: none;\r\n  background: linear-gradient(to bottom, rgba(5,10,15,.04), rgba(5,10,15,.65));\r\n  border-top: 1px solid rgba(255,255,255,.025);\r\n}\r\n.studio-visual { filter: drop-shadow(0 24px 24px rgba(0,0,0,.3)); }\r\n.studio-visual .studio-device {\r\n  background: linear-gradient(135deg, #34424f, #111c26 48%, #1e2b36);\r\n  border-color: rgba(203,218,230,.45);\r\n  box-shadow: inset 1px 1px 0 rgba(255,255,255,.13), 0 28px 55px rgba(0,0,0,.42);\r\n}\r\n.studio-screen-art {\r\n  background: radial-gradient(circle at 65% 40%, #ffc594 0%, #f6620d 24%, transparent 25%), linear-gradient(145deg, #283844, #0b121a) !important;\r\n}\r\n@media (prefers-reduced-motion: reduce) {\r\n  .studio-visual *, .services-studio * { animation: none !important; transition: none !important; }\r\n}\r\n"
+        }
+    ]
+}

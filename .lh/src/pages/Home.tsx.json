@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/pages/Home.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1791877122361,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1791877858062,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,12 +6,12 @@\n import { Symbols } from '../sections/Symbols'\n import { Services } from '../sections/Services'\n import { Work } from '../sections/Work'\n import { Process } from '../sections/Process'\n-import { Ecosystem } from '../sections/Ecosystem'\n+// import { Ecosystem } from '../sections/Ecosystem'\n import { About } from '../sections/About'\n import { Insights } from '../sections/Insights'\n-import { Faq } from '../sections/Faq'\n+// import { Faq } from '../sections/Faq'\n import { Contact } from '../sections/Contact'\n \n export default function Home() {\n   const { tr, lang } = useLang()\n"
+                }
+            ],
+            "date": 1791877122361,
+            "name": "Commit-0",
+            "content": "import { useLang } from '../lib/i18n'\nimport { useSeo } from '../lib/seo'\nimport { ui } from '../content/ui'\nimport { Hero } from '../sections/Hero'\nimport { Belief } from '../sections/Belief'\nimport { Symbols } from '../sections/Symbols'\nimport { Services } from '../sections/Services'\nimport { Work } from '../sections/Work'\nimport { Process } from '../sections/Process'\nimport { Ecosystem } from '../sections/Ecosystem'\nimport { About } from '../sections/About'\nimport { Insights } from '../sections/Insights'\nimport { Faq } from '../sections/Faq'\nimport { Contact } from '../sections/Contact'\n\nexport default function Home() {\n  const { tr, lang } = useLang()\n  useSeo(lang === 'ar' ? 'كرييتف مايند — نجعل الفكر مرئيًّا' : 'Creative Mind — Mind Made Visible', tr(ui.hero.sub))\n  return (\n    <>\n      <Hero />\n      <Belief />\n      <Symbols />\n      <Services />\n      <Work />\n      <Process />\n      <Ecosystem />\n      <About />\n      <Insights />\n      {/* <Faq /> */}\n      <Contact />\n    </>\n  )\n}\n"
+        }
+    ]
+}
