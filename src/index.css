@@ -159,19 +159,28 @@ html.lenis body {
   font-weight: 300;
 }
 [dir='rtl'] .t-hero {
-  font-size: 17vw;
   line-height: 1.22;
   letter-spacing: 0;
 }
+/* Same size as the English hero. The Arabic line masks carry a 0.2em padding whose negative
+   margins would collapse between lines and add dead space, so the lines stack as flex items
+   (no margin collapsing) and the line box is a little tighter on wide screens: the three lines
+   then clear the header on 1280x720 and 1366x768 laptops. */
+[dir='rtl'] .t-hero {
+  display: flex;
+  flex-direction: column;
+}
 @media (min-width: 1024px) {
   [dir='rtl'] .t-hero {
-    font-size: min(7.4vw, 14.5vh);
+    line-height: 1;
+  }
+  [dir='rtl'] .hero-legible .t-lead {
+    line-height: 1.7;
   }
 }
 [dir='rtl'] .t-display {
   line-height: 1.28;
   letter-spacing: 0;
-  font-size: clamp(2.2rem, 5.8vw, 5.8rem);
 }
 [dir='rtl'] .t-title {
   line-height: 1.4;
@@ -182,12 +191,10 @@ html.lenis body {
 }
 [dir='rtl'] .eyebrow {
   letter-spacing: 0;
-  font-size: 0.85rem;
 }
 [dir='rtl'] .latin.eyebrow,
 [dir='rtl'] .latin .eyebrow {
   letter-spacing: 0.34em;
-  font-size: 0.7rem;
 }
 
 /* masked line reveal */
@@ -266,7 +273,6 @@ html.lenis body {
 }
 [dir='rtl'] .btn {
   letter-spacing: 0;
-  font-size: 0.92rem;
 }
 .btn::before {
   content: '';

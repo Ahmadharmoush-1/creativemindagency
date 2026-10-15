@@ -377,7 +377,7 @@ export function Contact({
       className="relative isolate scroll-mt-20 overflow-hidden bg-[#051746] py-14 text-white sm:py-20 lg:min-h-[860px] lg:py-20"
       style={{
         fontFamily: isArabic
-          ? "'Noto Kufi Arabic', sans-serif"
+          ? "'Noto Kufi Arabic Variable', 'Noto Kufi Arabic', sans-serif"
           : "'Montserrat', sans-serif",
       }}
     >
@@ -435,11 +435,11 @@ export function Contact({
               id="contact-title"
               className="max-w-[13ch] text-[clamp(2.55rem,4.1vw,4.4rem)] font-light uppercase leading-[1.07] tracking-[-0.04em] text-white rtl:max-w-none rtl:leading-[1.35] rtl:tracking-normal"
             >
-              <span className="block">{tr({ en: 'Let’s build', ar: 'لنصنع معاً' })}</span>
+              <span className="block">{tr({ en: 'Let’s build', ar: 'لنصنع معًا' })}</span>
               <span className="block">
-                {tr({ en: 'something', ar: 'شيئاً' })}{' '}
+                {tr({ en: 'something', ar: 'شيئًا' })}{' '}
                 <strong className="font-bold text-[#f6620d]">
-                  {tr({ en: 'great.', ar: 'استثنائياً.' })}
+                  {tr({ en: 'great.', ar: 'استثنائيًا.' })}
                 </strong>
               </span>
             </Heading>
@@ -481,7 +481,7 @@ export function Contact({
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[13px] font-semibold text-white">
-                    {tr({ en: 'Let’s Chat', ar: 'تحدث معنا' })}
+                    {tr({ en: 'Let’s Chat', ar: 'تحدّث معنا' })}
                   </span>
                   <span className="mt-1 block text-[12px] text-white/80 group-hover:text-white sm:text-[13px]" dir="ltr">
                     {visibleWhatsApp}
@@ -653,7 +653,7 @@ export function Contact({
                     label={tr({ en: 'Message', ar: 'الرسالة' })}
                     placeholder={tr({
                       en: 'Tell us about your project, goals, or any questions...',
-                      ar: 'حدثنا عن مشروعك وأهدافك أو أسئلتك...',
+                      ar: 'حدّثنا عن مشروعك وأهدافك أو أسئلتك...',
                     })}
                     icon="chat"
                     textarea

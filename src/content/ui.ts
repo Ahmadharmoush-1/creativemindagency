@@ -283,7 +283,7 @@ export const ui = {
     company: { en: 'Company', ar: 'الشركة' } as L,
     email: { en: 'Email', ar: 'البريد الإلكتروني' } as L,
     phone: { en: 'Phone / WhatsApp', ar: 'الهاتف / واتساب' } as L,
-    need: { en: 'What do you need help with?', ar: 'بماذا تحتاج المساعدة؟' } as L,
+    need: { en: 'What do you need help with?', ar: 'فيمَ تحتاج إلى المساعدة؟' } as L,
     message: { en: 'Project message', ar: 'رسالة عن المشروع' } as L,
     cats: [
       { en: 'Brand', ar: 'علامة' },

@@ -63,7 +63,7 @@ const styles = `
   color: var(--cm-paper);
   font-family: Montserrat, Arial, sans-serif;
 }
-.cm-identity-scroll[dir='rtl'] { font-family: 'Noto Kufi Arabic', Montserrat, sans-serif; }
+.cm-identity-scroll[dir='rtl'] { font-family: 'Noto Kufi Arabic Variable', 'Noto Kufi Arabic', Montserrat, sans-serif; }
 .cm-identity-scroll *, .cm-identity-scroll *::before, .cm-identity-scroll *::after { box-sizing: border-box; }
 .cm-identity-screen {
   position: sticky;
@@ -136,13 +136,13 @@ const styles = `
 .cm-id-title span { display: block; white-space: nowrap; }
 .cm-id-arabic {
   margin: clamp(18px, 2.6vh, 33px) 0 0;
-  font-family: 'Noto Kufi Arabic', sans-serif;
+  font-family: 'Noto Kufi Arabic Variable', 'Noto Kufi Arabic', sans-serif;
   font-size: clamp(1.05rem, 2.05vw, 2.2rem);
   line-height: 1.9;
   color: rgba(255,255,255,.96);
 }
 .cm-identity-scroll[dir='ltr'] .cm-id-arabic { text-align: left; }
-.cm-identity-scroll[dir='rtl'] .cm-id-arabic { text-align: right; }
+.cm-identity-scroll[dir='rtl'] .cm-id-arabic { text-align: right; font-family: 'Montserrat Variable', Montserrat, sans-serif; }
 .cm-id-kicker {
   margin: 16px 0 0;
   color: rgba(255,255,255,.78);
@@ -271,7 +271,7 @@ const styles = `
   filter: blur(20px);
   pointer-events: none;
 }
-.cm-id-arabic-title .cm-id-title { letter-spacing: 0; line-height: 1.3; font-size: clamp(2rem, 4vw, 5.5rem); }
+.cm-id-arabic-title .cm-id-title { letter-spacing: 0; line-height: 1.3; }
 .cm-id-arabic-title .cm-id-title span { white-space: normal; }
 .cm-identity-scroll[dir='rtl'] .cm-id-stage { inset-inline-end: auto; inset-inline-start: -1.5%; }
 .cm-identity-scroll[dir='rtl'] .cm-id-body { width: 48%; }
@@ -308,7 +308,6 @@ const styles = `
   .cm-id-caption { gap: 4px; font-size: 9px; min-height: 52px; }
   .cm-id-caption svg { width: 22px; height: 22px; }
   .cm-id-bottomline { display: none; }
-  .cm-id-arabic-title .cm-id-title { font-size: clamp(1.7rem, 6vw, 3rem); }
   .cm-identity-scroll[dir='rtl'] .cm-id-body { width: 88%; }
 }
 @media (max-width: 390px) {
@@ -582,7 +581,7 @@ export function Symbols() {
             {isArabic ? 'Creativity with direction.' : 'إبداع يقوده التفكير الاستراتيجي'}
           </p>
           <p className="cm-id-kicker">
-            {tr({ en: 'Premium  ·  Strategic  ·  Editorial  ·  Cinematic', ar: 'إبداعي · استراتيجي · تحريري · سينمائي' })}
+            {tr({ en: 'Premium  ·  Strategic  ·  Editorial  ·  Cinematic', ar: 'راقٍ · استراتيجي · تحريري · سينمائي' })}
           </p>
           <p className="cm-id-description">
             {tr({
@@ -625,7 +624,7 @@ export function Symbols() {
         </div>
 
         <div className="cm-id-services">
-          <p>{tr({ en: 'Brands / Campaigns / Systems / Funnels', ar: 'العلامات التجارية / الحملات / الأنظمة / مسارات البيع' })}</p>
+          <p>{tr({ en: 'Brands / Campaigns / Systems / Funnels', ar: 'العلامات التجارية / الحملات / الأنظمة / مسارات التحويل' })}</p>
           <p>{tr({ en: 'Automations / Digital Experiences / Growth Engines', ar: 'الأتمتة / التجارب الرقمية / محركات النمو' })}</p>
         </div>
 

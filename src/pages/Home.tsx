@@ -3,6 +3,7 @@ import { useSeo } from '../lib/seo'
 import { ui } from '../content/ui'
 import { Hero } from '../sections/Hero'
 import { Belief } from '../sections/Belief'
+import { Clients } from '../sections/Clients'
 import { Symbols } from '../sections/Symbols'
 import { Services } from '../sections/Services'
 import { Work } from '../sections/Work'
@@ -26,6 +27,7 @@ export default function Home() {
       <div id="top">
         <Hero />
       </div>
+      <Clients />
       <div id="belief">
         <Belief />
       </div>

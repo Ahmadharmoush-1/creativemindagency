@@ -12,7 +12,9 @@ export function Hero() {
   const root = useRef<HTMLElement>(null)
   useFixedPin(root, '.scrolly-pin')
   const desktop = useMedia('(min-width: 1024px)')
-  // Phones and portrait tablets get a portrait crop of the film, framed on the character.
+  // Phones and portrait tablets get a portrait re-cut of the film (900x1776: the 1080p frame's
+  // right half with the sky and rock bed continued above and below), so the character and the
+  // $ summit both stay in a 9:19.5 window. It is anchored to the right edge: the summit is there.
   const portrait = useMedia('(max-width: 1023px) and (orientation: portrait)')
   const lines = ui.hero.lines[lang]
 
@@ -89,7 +91,7 @@ export function Hero() {
           '.hero-cam',
           {
             scale: desktop ? 1.38 : 1.22,
-            transformOrigin: desktop ? '84% 18%' : portrait ? '88% 22%' : '70% 20%',
+            transformOrigin: desktop ? '84% 18%' : portrait ? '90% 28%' : '70% 20%',
           },
           0,
         )
@@ -124,7 +126,7 @@ export function Hero() {
       key={portrait ? 'portrait' : 'wide'}
       ref={video}
       className={`absolute inset-0 h-full w-full object-cover lg:object-center ${
-        lang === 'ar' ? 'object-[74%_50%]' : 'object-[34%_50%]'
+        portrait ? 'object-[100%_50%]' : lang === 'ar' ? 'object-[74%_50%]' : 'object-[34%_50%]'
       }`}
       autoPlay
       muted

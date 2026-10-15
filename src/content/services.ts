@@ -41,7 +41,7 @@ export const services: Service[] = [
     includes: [
       { en: 'Campaign strategy', ar: 'استراتيجية الحملة' },
       { en: 'Creative & production', ar: 'الإبداع والإنتاج' },
-      { en: 'Media planning', ar: 'تخطيط الوسائل' },
+      { en: 'Media planning', ar: 'التخطيط الإعلامي' },
       { en: 'Measurement', ar: 'القياس' },
     ],
   },
@@ -66,7 +66,7 @@ export const services: Service[] = [
   {
     id: 'funnels',
     title: { en: 'Funnels', ar: 'مسارات التحويل' },
-    line: { en: 'Acquisition engines optimized for revenue.', ar: 'محركات استحواذ مُحسَّنة من أجل الإيراد.' },
+    line: { en: 'Acquisition engines optimized for revenue.', ar: 'محركات استحواذ مُحسَّنة لتحقيق الإيراد.' },
     detail: {
       en: 'Landing pages, offers, ads and follow-up designed as one path, from first attention to a measurable action.',
       ar: 'صفحات هبوط وعروض وإعلانات ومتابعة تُصمَّم كمسار واحد، من أول انتباه إلى فعل قابل للقياس.',
@@ -83,7 +83,7 @@ export const services: Service[] = [
     title: { en: 'Automations', ar: 'الأتمتة' },
     line: {
       en: 'Workflows that remove manual drag from growth.',
-      ar: 'مسارات عمل تزيل العبء اليدوي عن طريق النمو.',
+      ar: 'مسارات عمل تزيل العبء اليدوي من طريق النمو.',
     },
     detail: {
       en: 'CRM flows, lead routing, messaging and reporting that run on their own, so people spend their time on judgement, not repetition.',

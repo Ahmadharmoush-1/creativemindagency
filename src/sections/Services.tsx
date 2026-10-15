@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties, type RefObject } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
 import { useLang } from '../lib/i18n'
 import {
   ScrollTrigger,
@@ -36,8 +36,224 @@ const MOBILE_BACKGROUND = '/images/services-background-mobile.webp'
 const BACKGROUND_OVERLAY = 0.48
 
 // Adjust these if the main subject needs repositioning.
+// The animated lights (ServicesFx) assume 'center center'; move IMAGE_W/MOBILE_CROP_X with them if you change these.
 const DESKTOP_BACKGROUND_POSITION = 'center center'
 const MOBILE_BACKGROUND_POSITION = 'center center'
+
+/*
+  ANIMATED LIGHTS
+
+  The picture is a still. ServicesFx draws a stage with the picture's exact
+  geometry over it and animates the neon strips, the far-edge floor bars,
+  their reflections in the wet floor, the mist and a few embers. Every
+  element is placed in the picture's own pixels (1672 x 941) and the stage
+  is sized like object-fit: cover, so the lights stay glued to the image at
+  any viewport. The phone crop is the same picture from x = 330 to 1035.
+
+  It is CSS only: no extra image bytes, animations pause off screen and are
+  switched off for reduced motion.
+*/
+const IMAGE_W = 1672
+const IMAGE_H = 941
+const MOBILE_CROP_X = 330
+const MOBILE_CROP_W = 705
+
+type Glow = {
+  x: number
+  y: number
+  w: number
+  h: number
+  dur: number // seconds per breath
+  delay?: number
+  lo?: number
+  hi?: number
+  tone?: 'orange' | 'amber' | 'cyan'
+  flicker?: boolean
+}
+
+// Neon strips on the buildings and the orange ledges (picture pixels, centre + size).
+const NEON: Glow[] = [
+  { x: 160, y: 90, w: 80, h: 260, dur: 4.6, lo: 0.25, hi: 0.95 },
+  { x: 156, y: 260, w: 80, h: 220, dur: 5.2, delay: -1.6, lo: 0.25, hi: 0.95 },
+  { x: 118, y: 400, w: 100, h: 110, dur: 4.1, delay: -2.4, lo: 0.22, hi: 0.9 },
+  { x: 55, y: 452, w: 100, h: 60, dur: 4.1, delay: -2.4, lo: 0.22, hi: 0.85 },
+  { x: 6, y: 200, w: 50, h: 420, dur: 6, delay: -3, lo: 0.25, hi: 0.6 },
+  { x: 212, y: 255, w: 40, h: 210, dur: 7.5, lo: 0.4, hi: 0.9, flicker: true },
+  { x: 1642, y: 185, w: 56, h: 280, dur: 4.9, delay: -0.8, lo: 0.25, hi: 0.95 },
+  { x: 1660, y: 370, w: 46, h: 150, dur: 4.3, delay: -2.9, lo: 0.22, hi: 0.9 },
+  { x: 1455, y: 370, w: 34, h: 160, dur: 8.2, delay: -3.5, lo: 0.4, hi: 0.9, flicker: true },
+  { x: 1600, y: 525, w: 160, h: 56, dur: 5.4, delay: -1.2, lo: 0.22, hi: 0.85 },
+  { x: 65, y: 502, w: 160, h: 40, dur: 5.8, delay: -2.1, lo: 0.22, hi: 0.85 },
+]
+
+// Floor bars along the far edge of the plaza.
+const BARS: Glow[] = [
+  { x: 340, y: 600, w: 250, h: 38, dur: 3.8, lo: 0.22, hi: 0.95 },
+  { x: 480, y: 605, w: 110, h: 32, dur: 4.4, delay: -1.1, lo: 0.22, hi: 0.9 },
+  { x: 767, y: 617, w: 90, h: 28, dur: 3.5, delay: -0.7, lo: 0.22, hi: 0.95 },
+  { x: 1022, y: 622, w: 80, h: 28, dur: 4.1, delay: -2.2, lo: 0.22, hi: 0.95 },
+  { x: 1197, y: 606, w: 80, h: 28, dur: 3.9, delay: -1.5, lo: 0.22, hi: 0.95 },
+  { x: 1355, y: 573, w: 90, h: 28, dur: 4.6, delay: -0.4, lo: 0.22, hi: 0.9 },
+  { x: 1390, y: 603, w: 140, h: 32, dur: 3.7, delay: -2.8, lo: 0.22, hi: 0.95 },
+  { x: 1505, y: 652, w: 180, h: 38, dur: 4.2, delay: -1.9, lo: 0.22, hi: 0.95 },
+  { x: 1630, y: 672, w: 110, h: 32, dur: 4.8, delay: -0.9, lo: 0.22, hi: 0.9 },
+  // the character's visor
+  { x: 678, y: 510, w: 90, h: 80, dur: 3.2, delay: -1, lo: 0.1, hi: 0.4, tone: 'amber' },
+  // cyan edge line at the foot of the far wall
+  { x: 230, y: 652, w: 470, h: 12, dur: 5.6, delay: -2, lo: 0.15, hi: 0.5, tone: 'cyan' },
+  { x: 1300, y: 652, w: 400, h: 12, dur: 5.6, delay: -4.3, lo: 0.15, hi: 0.5, tone: 'cyan' },
+]
+
+// Warm pools of light on the wet floor under the strongest reflections.
+const POOLS: Glow[] = [
+  { x: 140, y: 800, w: 170, h: 320, dur: 5.1, lo: 0.1, hi: 0.32 },
+  { x: 660, y: 860, w: 170, h: 210, dur: 4.4, delay: -1.7, lo: 0.1, hi: 0.3 },
+  { x: 1400, y: 790, w: 150, h: 260, dur: 5.5, delay: -2.6, lo: 0.1, hi: 0.3 },
+  { x: 1636, y: 820, w: 110, h: 280, dur: 4.8, delay: -0.6, lo: 0.1, hi: 0.3 },
+]
+
+// Blue mist drifting across the middle distance, away from the character.
+const MIST = [
+  { x: 420, y: 470, w: 560, h: 250, dur: 24, delay: -6, lo: 0.1, hi: 0.22 },
+  { x: 1080, y: 545, w: 620, h: 230, dur: 30, delay: -14, lo: 0.1, hi: 0.2 },
+  { x: 1260, y: 480, w: 420, h: 170, dur: 21, delay: -3, lo: 0.08, hi: 0.18 },
+]
+
+// Embers rising from the neon: x, y of the start point, size, seconds per rise.
+const EMBERS = [
+  [150, 460, 3, 9], [185, 420, 2.5, 7.5], [130, 500, 3.5, 10.5], [215, 350, 2, 8],
+  [90, 470, 2.5, 9.5], [1620, 400, 3, 8.5], [1655, 300, 2.5, 10], [1460, 420, 2, 7],
+  [1570, 540, 3, 9], [1500, 600, 2.5, 8], [330, 600, 2, 7.5], [470, 606, 2.5, 8.5],
+  [1200, 608, 2, 9], [1390, 605, 2.5, 7.8],
+].map(([x, y, size, dur], index) => ({
+  x,
+  y,
+  size,
+  dur,
+  delay: -((index * 2.7) % dur),
+}))
+
+const px = (value: number, total: number) => `${(value / total) * 100}%`
+
+function glowStyle(glow: Glow): CSSProperties {
+  return {
+    left: px(glow.x - glow.w / 2, IMAGE_W),
+    top: px(glow.y - glow.h / 2, IMAGE_H),
+    width: px(glow.w, IMAGE_W),
+    height: px(glow.h, IMAGE_H),
+    animationDuration: `${glow.dur}s`,
+    animationDelay: `${glow.delay ?? 0}s`,
+    '--lo': glow.lo ?? 0.3,
+    '--hi': glow.hi ?? 0.8,
+  } as CSSProperties
+}
+
+/* A second, hidden copy of the picture used by the reflection and light-sweep layers. */
+function FxPicture({ className }: { className: string }) {
+  return (
+    <picture>
+      {MOBILE_BACKGROUND && (
+        <source media="(max-width: 1023px)" srcSet={MOBILE_BACKGROUND} />
+      )}
+      <img
+        src={DESKTOP_BACKGROUND}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+        className={`svc-copy ${className}`}
+      />
+    </picture>
+  )
+}
+
+function ServicesFx() {
+  const root = useRef<HTMLDivElement>(null)
+
+  // Animations run only while the section is on screen.
+  useEffect(() => {
+    const el = root.current
+    if (!el) return
+    const io = new IntersectionObserver(([entry]) => {
+      el.toggleAttribute('data-off', !entry.isIntersecting)
+    })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  return (
+    <div ref={root} className="svc-fx" aria-hidden="true">
+      <div className="svc-stage">
+        {/* reflections in the wet floor: a brightened copy of the picture, only where
+            it is brighter than the original, with a slow ripple crawling through it */}
+        <div className="svc-floor">
+          <div className="svc-ripple">
+            <FxPicture className="svc-copy-wet" />
+          </div>
+        </div>
+
+        {/* a band of light travelling along the far edge of the plaza */}
+        <div className="svc-horizon">
+          <div className="svc-sweep">
+            <FxPicture className="svc-copy-hot" />
+          </div>
+        </div>
+
+        <div className="svc-mist">
+          {MIST.map((m, i) => (
+            <span
+              key={i}
+              className="svc-cloud"
+              style={{
+                ...glowStyle({ ...m, w: m.w, h: m.h }),
+                animationDuration: `${m.dur}s, ${m.dur * 0.37}s`,
+                animationDelay: `${m.delay}s, ${m.delay * 0.5}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="svc-glows">
+          {POOLS.map((g, i) => (
+            <span key={`p${i}`} className="svc-glow svc-pool" style={glowStyle(g)} />
+          ))}
+          {NEON.map((g, i) => (
+            <span
+              key={`n${i}`}
+              className={`svc-glow ${g.flicker ? 'svc-flicker' : ''}`}
+              style={glowStyle(g)}
+            />
+          ))}
+          {BARS.map((g, i) => (
+            <span
+              key={`b${i}`}
+              className={`svc-glow ${g.tone === 'cyan' ? 'svc-cyan' : g.tone === 'amber' ? 'svc-amber' : ''}`}
+              style={glowStyle(g)}
+            />
+          ))}
+        </div>
+
+        <div className="svc-embers">
+          {EMBERS.map((e, i) => (
+            <span
+              key={i}
+              className="svc-ember"
+              style={{
+                left: px(e.x, IMAGE_W),
+                top: px(e.y, IMAGE_H),
+                width: e.size,
+                height: e.size,
+                animationDuration: `${e.dur}s`,
+                animationDelay: `${e.delay}s`,
+                '--drift': `${((i % 3) - 1) * 14}px`,
+              } as CSSProperties}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 /*
   Decorative background:
@@ -71,6 +287,8 @@ function ServicesBackground({ pinned = false }: { pinned?: boolean }) {
           }
         />
       </picture>
+
+      <ServicesFx />
 
       <div
         className="absolute inset-0 bg-black"
@@ -165,11 +383,205 @@ function ServicesStyles() {
         }
       }
 
+      /* ---------- animated lights over the still ---------- */
+
+      .svc-fx {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        container-type: size;
+      }
+
+      /* The stage has the picture's exact geometry, sized like object-fit: cover
+         (centre position), so percentages inside it are picture pixels. */
+      .svc-stage {
+        --sw: ${IMAGE_W};
+        --sx: 0;
+        --s: max(100cqw / var(--sw), 100cqh / ${IMAGE_H});
+        position: absolute;
+        width: calc(${IMAGE_W} * var(--s));
+        height: calc(${IMAGE_H} * var(--s));
+        left: calc((100cqw - var(--sw) * var(--s)) / 2 - var(--sx) * var(--s));
+        top: calc((100cqh - ${IMAGE_H} * var(--s)) / 2);
+      }
+
+      .svc-copy {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        display: block;
+      }
+
+      @media (max-width: 1023px) {
+        .svc-stage {
+          --sw: ${MOBILE_CROP_W};
+          --sx: ${MOBILE_CROP_X};
+        }
+        /* the phone file is a crop: put it back where it belongs on the stage */
+        .svc-copy {
+          left: ${(MOBILE_CROP_X / IMAGE_W) * 100}%;
+          width: ${(MOBILE_CROP_W / IMAGE_W) * 100}%;
+        }
+      }
+
+      /* wet floor: only the bright reflections survive the lighten blend */
+      .svc-floor {
+        position: absolute;
+        inset: 0;
+        mix-blend-mode: lighten;
+        -webkit-mask-image: linear-gradient(to bottom, transparent 68%, #000 74%, #000 100%);
+        mask-image: linear-gradient(to bottom, transparent 68%, #000 74%, #000 100%);
+        animation: svcShimmer 5.5s ease-in-out infinite alternate;
+      }
+      .svc-ripple {
+        position: absolute;
+        inset: 0;
+        -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0, #000 5px, rgba(0,0,0,0.25) 9px, rgba(0,0,0,0.25) 11px, #000 16px);
+        mask-image: repeating-linear-gradient(to bottom, #000 0, #000 5px, rgba(0,0,0,0.25) 9px, rgba(0,0,0,0.25) 11px, #000 16px);
+        animation: svcCrawl 1.9s linear infinite;
+      }
+      .svc-copy-wet {
+        filter: contrast(1.7) brightness(1.08) saturate(1.35);
+        animation: svcSway 7s ease-in-out infinite alternate;
+      }
+
+      /* light band travelling along the far edge */
+      .svc-horizon {
+        position: absolute;
+        inset: 0;
+        mix-blend-mode: lighten;
+        -webkit-mask-image: linear-gradient(to bottom, transparent 49%, #000 55%, #000 70%, transparent 75%);
+        mask-image: linear-gradient(to bottom, transparent 49%, #000 55%, #000 70%, transparent 75%);
+      }
+      .svc-sweep {
+        position: absolute;
+        inset: 0;
+        -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 0%, rgba(0,0,0,0.7) 40%, transparent 72%);
+        mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 0%, rgba(0,0,0,0.7) 40%, transparent 72%);
+        -webkit-mask-size: 34% 100%;
+        mask-size: 34% 100%;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        animation: svcSweep 11s ease-in-out infinite;
+      }
+      .svc-copy-hot {
+        filter: contrast(1.6) brightness(1.3) saturate(1.35);
+      }
+
+      .svc-mist,
+      .svc-glows,
+      .svc-embers {
+        position: absolute;
+        inset: 0;
+        mix-blend-mode: screen;
+      }
+
+      .svc-cloud {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(ellipse at center, rgba(150,190,255,0.9), rgba(110,150,230,0.45) 40%, transparent 70%);
+        animation: svcDrift 24s ease-in-out infinite alternate, svcBreathe 9s ease-in-out infinite alternate;
+      }
+
+      .svc-glow {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(ellipse at center, rgba(255,170,80,0.95), rgba(255,120,40,0.45) 38%, rgba(255,100,30,0) 70%);
+        animation: svcBreathe 4s ease-in-out infinite alternate;
+      }
+      .svc-pool {
+        background: radial-gradient(ellipse at center, rgba(255,140,60,0.8), rgba(255,100,30,0.3) 45%, transparent 72%);
+      }
+      .svc-amber {
+        background: radial-gradient(ellipse at center, rgba(255,220,140,0.95), rgba(255,170,70,0.4) 45%, transparent 70%);
+      }
+      .svc-cyan {
+        background: radial-gradient(ellipse at center, rgba(140,230,255,0.9), rgba(60,170,255,0.4) 45%, transparent 75%);
+      }
+      .svc-flicker {
+        animation-name: svcFlicker;
+        animation-timing-function: steps(1, end);
+        animation-direction: normal;
+      }
+
+      .svc-ember {
+        position: absolute;
+        border-radius: 50%;
+        background: #ffd9a0;
+        box-shadow: 0 0 6px 2px rgba(255,150,60,0.8);
+        opacity: 0;
+        animation: svcRise 8s linear infinite;
+      }
+
+      @keyframes svcBreathe {
+        from { opacity: var(--lo, 0.3); }
+        to { opacity: var(--hi, 0.8); }
+      }
+      @keyframes svcFlicker {
+        0%, 100% { opacity: var(--hi, 0.8); }
+        7% { opacity: calc(var(--lo, 0.3) * 0.6); }
+        9% { opacity: var(--hi, 0.8); }
+        11% { opacity: var(--lo, 0.3); }
+        13% { opacity: var(--hi, 0.8); }
+        46% { opacity: calc(var(--hi, 0.8) * 0.85); }
+        48% { opacity: var(--lo, 0.3); }
+        50% { opacity: var(--hi, 0.8); }
+        78% { opacity: calc(var(--hi, 0.8) * 0.9); }
+        79% { opacity: calc(var(--lo, 0.3) * 0.7); }
+        80% { opacity: var(--hi, 0.8); }
+      }
+      @keyframes svcShimmer {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
+      }
+      @keyframes svcCrawl {
+        from { -webkit-mask-position: 0 0; mask-position: 0 0; }
+        to { -webkit-mask-position: 0 16px; mask-position: 0 16px; }
+      }
+      @keyframes svcSway {
+        from { transform: translateX(-0.25%); }
+        to { transform: translateX(0.25%); }
+      }
+      @keyframes svcSweep {
+        from { -webkit-mask-position: -70% 0; mask-position: -70% 0; }
+        to { -webkit-mask-position: 170% 0; mask-position: 170% 0; }
+      }
+      @keyframes svcDrift {
+        from { transform: translate3d(-3%, 0, 0) scale(1); }
+        to { transform: translate3d(3%, -6%, 0) scale(1.1); }
+      }
+      @keyframes svcRise {
+        0% { transform: translate3d(0, 0, 0); opacity: 0; }
+        12% { opacity: 0.8; }
+        70% { opacity: 0.5; }
+        100% { transform: translate3d(var(--drift, 0px), -140px, 0); opacity: 0; }
+      }
+
+      /* off screen: stop the clock */
+      .svc-fx[data-off] * {
+        animation-play-state: paused;
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .services-surface *,
         .services-surface *::before,
         .services-surface *::after {
           transition: none !important;
+        }
+        .svc-fx * {
+          animation: none !important;
+        }
+        .svc-glow,
+        .svc-cloud {
+          opacity: calc((var(--lo, 0.3) + var(--hi, 0.8)) / 2);
+        }
+        .svc-embers,
+        .svc-sweep {
+          display: none;
         }
       }
     `}</style>
