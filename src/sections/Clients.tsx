@@ -35,7 +35,7 @@ const FORMATS = ['svg', 'png', 'webp'] // tried in this order
 const LOGO_HEIGHT = 34 // px on desktop; phones scale down in the stylesheet
 
 export function Clients() {
-  const { tr, lang } = useLang()
+  const { tr } = useLang()
   const root = useRef<HTMLElement>(null)
   // The URL of each logo that actually exists (svg, png or webp), found by probing once.
   const [found, setFound] = useState<Record<string, string>>({})
