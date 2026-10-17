@@ -329,6 +329,35 @@ const styles = `
   .cm-id-stage .cm-id-asset, .cm-id-stage .cm-id-finished { will-change: auto; }
   .cm-identity-scroll { height: 100svh; }
 }
+  /* Match this section to the artwork’s dark navy */
+.cm-identity-scroll {
+  --cm-blue: #06193a;
+  background: var(--cm-blue);
+}
+
+.cm-identity-screen {
+  background: #06193a;
+  box-shadow: 0 16vh 0 0 #06193a;
+}
+
+/* Remove the grid and extra background glow */
+.cm-identity-screen::before,
+.cm-identity-screen::after,
+.cm-id-stage .cm-id-horizon {
+  display: none;
+}
+
+/* Soften the image boundary into the section */
+.cm-id-stage .cm-id-finished {
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 9%),
+    linear-gradient(to bottom, #000 88%, transparent);
+  mask-image:
+    linear-gradient(to right, transparent, #000 9%),
+    linear-gradient(to bottom, #000 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
 `
 
 export function Symbols() {
@@ -647,4 +676,6 @@ export function Symbols() {
       </div>
     </section>
   )
+  
 }
+
