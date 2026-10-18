@@ -201,7 +201,7 @@ function PortfolioImage({ project }: { project: PortfolioProject }) {
   return (
     <div className="sw-frame group/frame relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl bg-white shadow-[0_26px_60px_-30px_rgba(5,23,70,0.5)] ring-1 ring-[#051746]/10">
       {source === 'failed' ? (
-        <p className="px-6 text-center text-sm text-[#051746]/60">
+        <p className="px-6 text-center text-base font-semibold text-[#051746]/85">
           {tr({
             en: 'Project image unavailable',
             ar: 'صورة المشروع غير متوفرة',
@@ -302,19 +302,19 @@ const studioStyles = `
 .sw-card:hover .sw-shot-r .sw-shot-in, .sw-card:focus-visible .sw-shot-r .sw-shot-in { transform: translate(6%, -52%) rotate(13deg); }
 .sw-card:hover .sw-shot-c .sw-shot-in, .sw-card:focus-visible .sw-shot-c .sw-shot-in { transform: translate(-50%, -50%) rotate(0deg) scale(1.07); }
 .sw-card-body { position: relative; display: flex; flex-direction: column; flex: 1; padding: 1.5rem 1.75rem 1.6rem; }
-.sw-card-title { display: block; margin: .6rem 0 1.4rem; font-weight: 600; line-height: 1.05; letter-spacing: -.03em; font-size: clamp(1.9rem, 2.7vw, 2.7rem); }
+.sw-card-title { display: block; margin: .6rem 0 1.4rem; font-weight: 700; line-height: 1.05; letter-spacing: -.03em; font-size: clamp(1.75rem, 2.4vw, 2.4rem); }
 [dir='rtl'] .sw-card-title { letter-spacing: 0; line-height: 1.4; }
 .sw-card-foot {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   margin-top: auto; padding-top: 1.1rem; border-top: 1px solid rgba(255,255,255,.16);
-  font-size: .8rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  font-size: 1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
   transition: border-color .5s;
 }
-[dir='rtl'] .sw-card-foot { letter-spacing: 0; font-size: .95rem; }
+[dir='rtl'] .sw-card-foot { letter-spacing: 0; font-size: 1.05rem; }
 .sw-card:hover .sw-card-foot, .sw-card:focus-visible .sw-card-foot { border-top-color: var(--sw-signal); }
 .sw-card-arrow {
-  display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.3); font-size: 1.1rem;
+  display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.3); font-size: 1.3rem;
   transition: background-color .5s, border-color .5s, transform .5s cubic-bezier(.16,1,.3,1);
 }
 .sw-card:hover .sw-card-arrow, .sw-card:focus-visible .sw-card-arrow { background: var(--sw-signal); border-color: var(--sw-signal); transform: scale(1.08); }
@@ -389,7 +389,7 @@ function CategoryCard({
           ))}
         </span>
         <span className="sw-card-body">
-          <span className="flex items-center gap-3 text-xs tracking-wide text-white/55">
+          <span className="flex items-center gap-3 text-sm font-semibold tracking-wide text-white/90 sm:text-base">
             <span className="latin tabular-nums text-signal">{String(index + 1).padStart(2, '0')}</span>
             <span aria-hidden="true">·</span>
             <span>{count}</span>
@@ -534,7 +534,7 @@ export function Credibility() {
           className={`grid items-end gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 ${revealClass(header.visible)}`}
         >
           <div>
-            <p className="eyebrow mb-6 inline-flex items-center gap-3 text-signal">
+            <p className="eyebrow mb-6 inline-flex items-center gap-3 !text-[0.95rem] !font-bold text-signal lg:!text-[1rem]">
               <span
                 aria-hidden="true"
                 className="h-1.5 w-1.5 rounded-full bg-signal shadow-[0_0_14px_rgba(255,106,0,0.70)]"
@@ -543,16 +543,16 @@ export function Credibility() {
             </p>
             <h2
               id="credibility-title"
-              className="max-w-[15ch] text-[clamp(2.8rem,6.2vw,6.1rem)] font-light leading-[1.03] tracking-tight text-white rtl:max-w-none rtl:leading-tight rtl:tracking-normal"
+              className="max-w-[15ch] text-[clamp(2.25rem,5.3vw,5.2rem)] font-bold leading-[1.03] tracking-tight text-white rtl:max-w-none rtl:leading-tight rtl:tracking-normal"
             >
               {tr({ en: 'Built on decades', ar: 'خبرة تمتد' })}{' '}
-              <span className="font-semibold">
+              <span className="font-bold">
                 {tr({ en: 'of craft', ar: 'لعقود من الإبداع' })}
                 <span className="text-signal">.</span>
               </span>
             </h2>
           </div>
-          <p className="max-w-[58ch] text-base leading-[1.85] text-white/65 sm:text-lg lg:pb-2">
+          <p className="max-w-[58ch] text-[1.125rem] font-semibold leading-[1.85] text-white/95 sm:text-xl lg:pb-2">
             {tr({
               en: 'Creative Mind is built on more than 25 years of experience across branding, advertising, marketing, digital experiences, print production, automation, and business growth initiatives throughout the Middle East and beyond.',
               ar: 'ترتكز كرييتف مايند على أكثر من 25 عامًا من الخبرة في بناء العلامات التجارية والإعلان والتسويق والتجارب الرقمية والإنتاج الطباعي والأتمتة ومبادرات نمو الأعمال في الشرق الأوسط وخارجه.',
@@ -581,16 +581,16 @@ export function Credibility() {
                   className="absolute -end-12 -top-16 h-32 w-32 rounded-full bg-signal/[0.055] blur-3xl transition-colors duration-300 group-hover:bg-signal/[0.11]"
                 />
                 <div className="relative flex items-center justify-between">
-                  <span className="latin text-xs font-medium tracking-[0.16em] text-white/35">
+                  <span className="latin text-sm font-bold tracking-[0.12em] text-white/80">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-signal" />
                 </div>
                 <div className="relative mt-7 flex flex-col">
-                  <dt className="order-2 mt-3 text-xs font-medium uppercase leading-relaxed tracking-[0.08em] text-white/60 sm:text-sm rtl:tracking-normal">
+                  <dt className="order-2 mt-3 text-sm font-bold uppercase leading-relaxed tracking-[0.04em] text-white/95 sm:text-base rtl:tracking-normal">
                     {tr(stat.label)}
                   </dt>
-                  <dd className="latin order-1 whitespace-nowrap text-[clamp(1.7rem,5.6vw,4.25rem)] font-semibold leading-none tracking-[-0.055em] text-white tabular-nums">
+                  <dd className="latin order-1 whitespace-nowrap text-[clamp(1.7rem,5.6vw,4.25rem)] font-bold leading-none tracking-[-0.055em] text-white tabular-nums">
                     <AnimatedCounter
                       target={stat.value}
                       suffix={stat.suffix}
@@ -751,25 +751,25 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
         <div className="wrap relative">
           {!activeId && <header className="mb-12 grid items-end gap-8 sm:mb-16 lg:grid-cols-[1fr_auto]">
             <div>
-              <p className="sw-intro eyebrow mb-6 flex items-center gap-3 text-signal">
+              <p className="sw-intro eyebrow mb-6 flex items-center gap-3 !text-[0.95rem] !font-bold text-signal lg:!text-[1rem]">
                 <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-signal" />
                 {tr({ en: 'Selected work', ar: 'أعمال مختارة' })}
               </p>
               <h2
                 id="selected-work-title"
-                className="max-w-[15ch] text-[clamp(2.8rem,6.5vw,6.5rem)] font-light leading-[1.02] tracking-tight rtl:max-w-none rtl:leading-tight rtl:tracking-normal"
+                className="max-w-[15ch] text-[clamp(2.25rem,5.5vw,5.5rem)] font-bold leading-[1.02] tracking-tight rtl:max-w-none rtl:leading-tight rtl:tracking-normal"
               >
                 <span className="sw-line">
                   <span>{tr({ en: 'A look inside', ar: 'نظرة داخل' })}</span>
                 </span>
                 <span className="sw-line">
-                  <span className="font-semibold">
+                  <span className="font-bold">
                     {tr({ en: 'the studio', ar: 'الاستوديو' })}
                     <span className="text-signal">.</span>
                   </span>
                 </span>
               </h2>
-              <p className="sw-intro mt-6 text-base leading-relaxed text-[#051746]/65 sm:text-lg">
+              <p className="sw-intro mt-6 text-[1.125rem] font-semibold leading-relaxed text-[#051746]/90 sm:text-xl">
                 {tr({
                   en: 'Curated work across five disciplines.',
                   ar: 'أعمال منتقاة عبر خمسة تخصصات.',
@@ -778,18 +778,18 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
             </div>
             <dl className="sw-intro flex gap-10 border-t border-[#051746]/15 pt-5 lg:border-s lg:border-t-0 lg:ps-10 lg:pt-0">
               <div>
-                <dd className="latin text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+                <dd className="latin text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
                   {String(workCategories.length).padStart(2, '0')}
                 </dd>
-                <dt className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-[#051746]/55 rtl:tracking-normal">
+                <dt className="mt-2 text-sm font-bold uppercase tracking-[0.08em] text-[#051746]/85 sm:text-base rtl:tracking-normal">
                   {tr({ en: 'Disciplines', ar: 'تخصصات' })}
                 </dt>
               </div>
               <div>
-                <dd className="latin text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+                <dd className="latin text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">
                   {totalProjects}
                 </dd>
-                <dt className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-[#051746]/55 rtl:tracking-normal">
+                <dt className="mt-2 text-sm font-bold uppercase tracking-[0.08em] text-[#051746]/85 sm:text-base rtl:tracking-normal">
                   {tr({ en: 'Projects shown', ar: 'مشروعًا معروضًا' })}
                 </dt>
               </div>
@@ -822,11 +822,11 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
               <div className="sw-detail-head">
                 <a
                   href="/#selected-work"
-                  className="group/back mb-8 inline-flex items-center gap-3 rounded-full border border-[#051746]/20 py-2.5 ps-3 pe-5 text-sm font-medium text-[#051746] transition-colors hover:border-signal hover:bg-signal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal"
+                  className="group/back mb-8 inline-flex items-center gap-3 rounded-full border border-[#051746]/20 min-h-[3.75rem] py-3.5 ps-4 pe-6 text-base font-bold sm:text-lg text-[#051746] transition-colors hover:border-signal hover:bg-signal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal"
                 >
                   <span
                     aria-hidden="true"
-                    className="grid h-7 w-7 place-items-center rounded-full bg-[#051746] text-white transition-colors group-hover/back:bg-white group-hover/back:text-signal"
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#051746] text-white transition-colors group-hover/back:bg-white group-hover/back:text-signal"
                   >
                     {rtl ? '→' : '←'}
                   </span>
@@ -838,12 +838,12 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
                     ref={categoryHeadingRef}
                     tabIndex={-1}
                     style={{ outline: 'none' }}
-                    className="text-4xl font-semibold tracking-tight sm:text-6xl rtl:tracking-normal"
+                    className="text-[clamp(2rem,4.5vw,3.25rem)] font-bold tracking-tight rtl:tracking-normal"
                   >
                     {tr(activeCategory.title)}
                     <span className="text-signal">.</span>
                   </h1>
-                  <p className="text-sm text-[#051746]/55">{projectCount(activeCategory.projects.length)}</p>
+                  <p className="text-base font-semibold text-[#051746]/85 sm:text-lg">{projectCount(activeCategory.projects.length)}</p>
                 </div>
               </div>
               <div
@@ -855,12 +855,12 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
                   <article key={project.id} className="sw-project min-w-0">
                     <PortfolioImage project={project} />
                     <div className="flex gap-4 px-1 pt-5">
-                      <span className="latin pt-1.5 text-xs font-medium text-signal tabular-nums">
+                      <span className="latin pt-1.5 text-sm font-bold text-signal tabular-nums">
                         {String(index + 1).padStart(2, '0')}
                       </span>
                       <div>
-                        <h4 className="text-xl font-semibold leading-snug sm:text-2xl">{tr(project.name)}</h4>
-                        <p className="mt-1.5 text-sm leading-relaxed text-[#051746]/60">{tr(project.description)}</p>
+                        <h4 className="text-xl font-bold leading-snug sm:text-2xl">{tr(project.name)}</h4>
+                        <p className="mt-1.5 text-base font-semibold leading-relaxed text-[#051746]/85 sm:text-lg">{tr(project.description)}</p>
                       </div>
                     </div>
                   </article>

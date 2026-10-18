@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/components/BackToTop.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1792314172329,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1792314172329,
+            "name": "Commit-0",
+            "content": "import { useLang } from '../lib/i18n'\r\nimport { scrollToHash } from '../lib/scroll'\r\n\r\nexport function BackToTop() {\r\n  const { tr } = useLang()\r\n\r\n  return (\r\n    <>\r\n      <style>{`\r\n        .cm-back-to-top {\r\n          position: fixed;\r\n          right: max(20px, env(safe-area-inset-right));\r\n          bottom: calc(20px + env(safe-area-inset-bottom));\r\n          z-index: 100;\r\n          display: flex;\r\n          align-items: center;\r\n          justify-content: center;\r\n          width: 48px;\r\n          height: 48px;\r\n          padding: 0;\r\n          border: 1px solid rgba(255, 255, 255, 0.22);\r\n          border-radius: 50%;\r\n          background: #f6620d;\r\n          color: #ffffff;\r\n          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);\r\n          cursor: pointer;\r\n          transition: background 180ms ease, transform 180ms ease;\r\n        }\r\n\r\n        @media (hover: hover) {\r\n          .cm-back-to-top:hover {\r\n            background: #df5206;\r\n            transform: translateY(-3px);\r\n          }\r\n        }\r\n\r\n        .cm-back-to-top:focus-visible {\r\n          outline: 3px solid #ffffff;\r\n          outline-offset: 4px;\r\n        }\r\n\r\n        @media (prefers-reduced-motion: reduce) {\r\n          .cm-back-to-top {\r\n            transition: none;\r\n          }\r\n        }\r\n      `}</style>\r\n\r\n      <button\r\n        type=\"button\"\r\n        className=\"cm-back-to-top\"\r\n        aria-label={tr({\r\n          en: 'Back to top',\r\n          ar: 'العودة إلى الأعلى',\r\n        })}\r\n        onClick={() => scrollToHash('#page-top')}\r\n      >\r\n        <svg\r\n          width=\"22\"\r\n          height=\"22\"\r\n          viewBox=\"0 0 24 24\"\r\n          fill=\"none\"\r\n          stroke=\"currentColor\"\r\n          strokeWidth=\"1.8\"\r\n          strokeLinecap=\"round\"\r\n          strokeLinejoin=\"round\"\r\n          aria-hidden=\"true\"\r\n        >\r\n          <path d=\"M12 19V5\" />\r\n          <path d=\"m5 12 7-7 7 7\" />\r\n        </svg>\r\n      </button>\r\n    </>\r\n  )\r\n}"
+        }
+    ]
+}

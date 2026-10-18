@@ -86,6 +86,11 @@ export function useCanvas(
       draw(ctx, w, h, t / 1000)
       raf = requestAnimationFrame(loop)
     }
+    // A still canvas has no loop: let callers ask for one more frame (an image finished loading).
+    const repaint = () => {
+      if (still) draw(ctx, w, h, 0)
+    }
+    canvas.addEventListener('repaint', repaint)
     const ro = new ResizeObserver(resize)
     ro.observe(canvas)
     const io = new IntersectionObserver(([e]) => {
@@ -97,6 +102,7 @@ export function useCanvas(
     resize()
     return () => {
       cancelAnimationFrame(raf)
+      canvas.removeEventListener('repaint', repaint)
       ro.disconnect()
       io.disconnect()
     }
@@ -116,11 +122,12 @@ export const isTouch = () =>
  * animation can visibly shake. `position: fixed` is attached to the screen itself and cannot.
  * The stage is absolute at the top of the track before the pin, fixed during it, and absolute
  * at the bottom after it. Desktop keeps CSS sticky.
+ * Pass `null` as the selector for a layout that has no pin (and list what decides it in `deps`).
  */
-export function useFixedPin(track: RefObject<HTMLElement | null>, stageSelector: string, deps: unknown[] = []) {
+export function useFixedPin(track: RefObject<HTMLElement | null>, stageSelector: string | null, deps: unknown[] = []) {
   useLayoutEffect(() => {
     const el = track.current
-    if (!el || prefersReduced() || !isTouch()) return
+    if (!el || !stageSelector || prefersReduced() || !isTouch()) return
     const stage = el.querySelector<HTMLElement>(stageSelector)
     if (!stage) return
 

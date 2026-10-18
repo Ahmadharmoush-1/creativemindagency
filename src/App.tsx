@@ -10,6 +10,7 @@ import { Loader } from './components/Loader'
 import { JourneyRail } from './components/JourneyRail'
 import Home from './pages/Home'
 import { Work, workCategories } from './sections/Work'
+import { BackToTop } from './components/BackToTop'
 
 function useReveals(scope: RefObject<HTMLElement | null>, deps: unknown[], enabled: boolean) {
   useGsap(scope, () => {
@@ -143,24 +144,61 @@ export default function App() {
   }, [location, ready])
 
   useReveals(main, [ready, path], ready)
-
   return (
     <ReadyCtx.Provider value={ready}>
+      <div id="page-top" aria-hidden="true" />
+
       <Loader onDone={() => setReady(true)} />
+
       <Header />
-      <main ref={main} id="main" tabIndex={-1} className={`page-enter lang-fade outline-none ${switching ? 'is-switching' : ''}`}>
-        {isHome ? <Home /> : category ? <Work key={category.id} categoryId={category.id} /> : (
-          <section dir={rtl ? 'rtl' : 'ltr'} className="min-h-[70vh] bg-[#051746] px-6 pb-24 pt-40 text-center text-white">
-            <h1 className="text-4xl font-semibold">{tr({ en: 'Page not found', ar: 'الصفحة غير موجودة' })}</h1>
-            <a href="/" className="mt-8 inline-flex gap-3 rounded-full bg-[#f6620d] px-6 py-3">
+
+      <main
+        ref={main}
+        id="main"
+        tabIndex={-1}
+        className={`page-enter lang-fade outline-none ${
+          switching ? 'is-switching' : ''
+        }`}
+      >
+        {isHome ? (
+          <Home />
+        ) : category ? (
+          <Work key={category.id} categoryId={category.id} />
+        ) : (
+          <section
+            dir={rtl ? 'rtl' : 'ltr'}
+            className="min-h-[70vh] bg-[#051746] px-6 pb-24 pt-40 text-center text-white"
+          >
+            <h1 className="text-4xl font-semibold">
+              {tr({
+                en: 'Page not found',
+                ar: 'الصفحة غير موجودة',
+              })}
+            </h1>
+
+            <a
+              href="/"
+              className="mt-8 inline-flex gap-3 rounded-full bg-[#f6620d] px-6 py-3"
+            >
               <span aria-hidden="true">{rtl ? '→' : '←'}</span>
-              {tr({ en: 'Back to home', ar: 'العودة إلى الصفحة الرئيسية' })}
+              {tr({
+                en: 'Back to home',
+                ar: 'العودة إلى الصفحة الرئيسية',
+              })}
             </a>
           </section>
         )}
       </main>
-      <div className={`lang-fade ${switching ? 'is-switching' : ''}`}><Footer /></div>
+
+      <div
+        className={`lang-fade ${switching ? 'is-switching' : ''}`}
+      >
+        <Footer />
+      </div>
+
       {isHome && <JourneyRail />}
+
+      {ready && <BackToTop />}
     </ReadyCtx.Provider>
   )
 }

@@ -5,13 +5,14 @@ export const site = {
   name: 'Creative Mind',
   tagline: { en: 'Mind Made Visible.', ar: 'نجعل الفكر مرئيًّا.' } as L,
   // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).
-  whatsapp: '',
+  whatsapp: '+966 50 975 2581',
   // TODO: real inbox.
-  email: 'hello@creativemind.example',
+  email: 'creativemind.com.sa@gmail.com',
   social: [
-    { label: 'Instagram', href: '#' },
-    { label: 'LinkedIn', href: '#' },
-    { label: 'Behance', href: '#' },
+    { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemindcomsa' },
+    { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },
+    { label: 'X', href: 'https://x.com/creativemindcom' },
   ],
 }
 

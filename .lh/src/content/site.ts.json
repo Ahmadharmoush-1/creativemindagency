@@ -1,0 +1,70 @@
+{
+    "sourceFile": "src/content/site.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 13,
+            "patches": [
+                {
+                    "date": 1792312408282,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1792312415019,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n   social: [\n     { label: 'Instagram', href: '#' },\n     { label: 'LinkedIn', href: '#' },\n     { label: 'TikTok', href: '#' },\n+    { label: 'X', href: '#' },\n   ],\n }\n \n /**\n"
+                },
+                {
+                    "date": 1792312441654,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n   whatsapp: '',\n   // TODO: real inbox.\n   email: 'hello@creativemind.example',\n   social: [\n-    { label: 'Instagram', href: '#' },\n+    { label: 'Instagram', href: '#https://www.instagram.com/creativemind.com.sa/' },\n     { label: 'LinkedIn', href: '#' },\n     { label: 'TikTok', href: '#' },\n     { label: 'X', href: '#' },\n   ],\n"
+                },
+                {
+                    "date": 1792312461727,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n   whatsapp: '',\n   // TODO: real inbox.\n   email: 'hello@creativemind.example',\n   social: [\n-    { label: 'Instagram', href: '#https://www.instagram.com/creativemind.com.sa/' },\n+    { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n     { label: 'LinkedIn', href: '#' },\n     { label: 'TikTok', href: '#' },\n     { label: 'X', href: '#' },\n   ],\n"
+                },
+                {
+                    "date": 1792312467444,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,11 +9,11 @@\n   // TODO: real inbox.\n   email: 'hello@creativemind.example',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n-    { label: 'LinkedIn', href: '#' },\n-    { label: 'TikTok', href: '#' },\n-    { label: 'X', href: '#' },\n+    { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemind' },\n+    { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind' },\n+    { label: 'X', href: 'https://twitter.com/creativemind' },\n   ],\n }\n \n /**\n"
+                },
+                {
+                    "date": 1792312669070,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,9 @@\n   email: 'hello@creativemind.example',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemind' },\n-    { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind' },\n+    { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },\n     { label: 'X', href: 'https://twitter.com/creativemind' },\n   ],\n }\n \n"
+                },
+                {
+                    "date": 1792312743021,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n export const site = {\n   name: 'Creative Mind',\n   tagline: { en: 'Mind Made Visible.', ar: 'نجعل الفكر مرئيًّا.' } as L,\n   // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).\n-  whatsapp: '',\n+  whatsapp: '+966 ',\n   // TODO: real inbox.\n   email: 'hello@creativemind.example',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n"
+                },
+                {
+                    "date": 1792312750288,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n export const site = {\n   name: 'Creative Mind',\n   tagline: { en: 'Mind Made Visible.', ar: 'نجعل الفكر مرئيًّا.' } as L,\n   // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).\n-  whatsapp: '+966 ',\n+  whatsapp: '+966 50 975 2581',\n   // TODO: real inbox.\n   email: 'hello@creativemind.example',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n"
+                },
+                {
+                    "date": 1792312874518,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   tagline: { en: 'Mind Made Visible.', ar: 'نجعل الفكر مرئيًّا.' } as L,\n   // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).\n   whatsapp: '+966 50 975 2581',\n   // TODO: real inbox.\n-  email: 'hello@creativemind.example',\n+  email: 'info@creativemind.example',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemind' },\n     { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },\n"
+                },
+                {
+                    "date": 1792313187856,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   tagline: { en: 'Mind Made Visible.', ar: 'نجعل الفكر مرئيًّا.' } as L,\n   // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).\n   whatsapp: '+966 50 975 2581',\n   // TODO: real inbox.\n-  email: 'info@creativemind.example',\n+  email: 'creativemind.sa',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemind' },\n     { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },\n"
+                },
+                {
+                    "date": 1792313197830,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   tagline: { en: 'Mind Made Visible.', ar: 'نجعل الفكر مرئيًّا.' } as L,\n   // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).\n   whatsapp: '+966 50 975 2581',\n   // TODO: real inbox.\n-  email: 'creativemind.sa',\n+  email: 'creativemind.com.sa',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemind' },\n     { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },\n"
+                },
+                {
+                    "date": 1792313203085,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   tagline: { en: 'Mind Made Visible.', ar: 'نجعل الفكر مرئيًّا.' } as L,\n   // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).\n   whatsapp: '+966 50 975 2581',\n   // TODO: real inbox.\n-  email: 'creativemind.com.sa',\n+  email: 'creativemind.com.sa@gmail.com',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemind' },\n     { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },\n"
+                },
+                {
+                    "date": 1792313216516,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemind' },\n     { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },\n-    { label: 'X', href: 'https://twitter.com/creativemind' },\n+    { label: 'X', href: 'https://x.com/creativemind' },\n   ],\n }\n \n /**\n"
+                },
+                {
+                    "date": 1792313235283,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,11 +9,11 @@\n   // TODO: real inbox.\n   email: 'creativemind.com.sa@gmail.com',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n-    { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemind' },\n+    { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemindcomsa' },\n     { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },\n-    { label: 'X', href: 'https://x.com/creativemind' },\n+    { label: 'X', href: 'https://x.com/creativemindcom' },\n   ],\n }\n \n /**\n"
+                }
+            ],
+            "date": 1792312408282,
+            "name": "Commit-0",
+            "content": "import type { L } from '../lib/i18n'\n\n/** Global site settings. Replace the placeholders before launch. */\nexport const site = {\n  name: 'Creative Mind',\n  tagline: { en: 'Mind Made Visible.', ar: 'نجعل الفكر مرئيًّا.' } as L,\n  // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).\n  whatsapp: '',\n  // TODO: real inbox.\n  email: 'hello@creativemind.example',\n  social: [\n    { label: 'Instagram', href: '#' },\n    { label: 'LinkedIn', href: '#' },\n    { label: 'TikTok', href: '#' },\n  ],\n}\n\n/**\n * Landing-page navigation. Each entry points at a section id on the page\n * (the ids are set in src/pages/Home.tsx and in the sections themselves).\n */\nexport const nav: { to: string; label: L }[] = [\n  { to: '#belief', label: { en: 'What we believe', ar: 'ما نؤمن به' } },\n  { to: '#symbols', label: { en: 'Symbols', ar: 'الرموز' } },\n  { to: '#services', label: { en: 'Services', ar: 'خدماتنا' } },\n  { to: '#selected-work', label: { en: 'Work', ar: 'أعمالنا' } },\n  { to: '#about', label: { en: 'About', ar: 'من نحن' } },\n  { to: '#contact', label: { en: 'Contact', ar: 'تواصل' } },\n]\n"
+        }
+    ]
+}

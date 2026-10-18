@@ -1,0 +1,18 @@
+{
+    "sourceFile": "index.html",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1792315596341,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1792315596341,
+            "name": "Commit-0",
+            "content": "<!doctype html>\n<html lang=\"en\" dir=\"ltr\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, viewport-fit=cover\" />\n    <title>Creative Mind — Mind Made Visible</title>\n    <meta\n      name=\"description\"\n      content=\"Creative Mind is a marketing and creative agency. Brands, campaigns and digital systems designed to move your business forward.\"\n    />\n    <meta name=\"theme-color\" content=\"#051746\" />\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:site_name\" content=\"Creative Mind\" />\n    <meta property=\"og:title\" content=\"Creative Mind — Mind Made Visible\" />\n    <meta\n      property=\"og:description\"\n      content=\"We don't decorate brands. We engineer them. Brands, campaigns, systems, funnels, automations, digital experiences and growth engines.\"\n    />\n    <meta property=\"og:image\" content=\"/media/hero-poster.jpg\" />\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg\" />\n    <!-- Hero poster: preload only the copy this screen will actually show. -->\n    <link rel=\"preload\" as=\"image\" href=\"/media/hero-poster-mobile.webp\" fetchpriority=\"high\" media=\"(max-width: 1023px) and (orientation: portrait)\" />\n    <link rel=\"preload\" as=\"image\" href=\"/media/hero-poster.webp\" fetchpriority=\"high\" media=\"(min-width: 1024px), (orientation: landscape)\" />\n    <script type=\"application/ld+json\">\n      {\n        \"@context\": \"https://schema.org\",\n        \"@type\": \"Organization\",\n        \"name\": \"Creative Mind\",\n        \"slogan\": \"Mind Made Visible\",\n        \"description\": \"Marketing and creative agency building brands, campaigns, systems, funnels, automations, digital experiences and growth engines.\"\n      }\n    </script>\n    <script>\n      // Set language, direction and motion preference before first paint to avoid layout shift.\n      ;(function () {\n        var d = document.documentElement\n        try {\n          var l = localStorage.getItem('cm-lang')\n          if (l === 'ar') {\n            d.lang = 'ar'\n            d.dir = 'rtl'\n          }\n        } catch (e) {}\n        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('js-motion')\n      })()\n    </script>\n  </head>\n  <body>\n    <form\n  name=\"contact\"\n  method=\"POST\"\n  data-netlify=\"true\"\n  hidden\n>\n  <input type=\"text\" name=\"name\" />\n  <input type=\"text\" name=\"company\" />\n  <input type=\"email\" name=\"email\" />\n  <input type=\"tel\" name=\"phone\" />\n  <textarea name=\"message\"></textarea>\n  <input type=\"text\" name=\"categories\" />\n  <input type=\"text\" name=\"lang\" />\n</form>\n    <div id=\"root\"></div>\n    <noscript>Creative Mind — Mind Made Visible. This site needs JavaScript to run.</noscript>\n    <script type=\"module\" src=\"/src/main.tsx\"></script>\n  </body>\n</html>\n"
+        }
+    ]
+}

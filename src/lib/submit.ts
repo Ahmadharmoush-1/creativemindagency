@@ -1,29 +1,32 @@
-export type Inquiry = {
+export async function submitInquiry(inquiry: {
   name: string
   company: string
   email: string
   phone: string
-  categories: string[]
   message: string
+  categories: string[]
   lang: string
-}
-
-/**
- * Sends the contact form.
- * Set VITE_FORM_ENDPOINT (see .env.example) to a URL that accepts a JSON POST.
- * Without it, nothing is sent anywhere: the form only simulates a successful submit
- * so the flow can be reviewed.
- */
-export async function submitInquiry(data: Inquiry): Promise<void> {
-  const endpoint = import.meta.env.VITE_FORM_ENDPOINT as string | undefined
-  if (!endpoint) {
-    await new Promise((r) => setTimeout(r, 900))
-    return
-  }
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify(data),
+}) {
+  const body = new URLSearchParams({
+    'form-name': 'contact',
+    name: inquiry.name,
+    company: inquiry.company,
+    email: inquiry.email,
+    phone: inquiry.phone,
+    message: inquiry.message,
+    categories: inquiry.categories.join(', '),
+    lang: inquiry.lang,
   })
-  if (!res.ok) throw new Error(`Form endpoint responded ${res.status}`)
+
+  const response = await fetch('/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: body.toString(),
+  })
+
+  if (!response.ok) {
+    throw new Error('Your message could not be submitted.')
+  }
 }

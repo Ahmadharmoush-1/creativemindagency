@@ -47,6 +47,20 @@
     </script>
   </head>
   <body>
+    <form
+  name="contact"
+  method="POST"
+  data-netlify="true"
+  hidden
+>
+  <input type="text" name="name" />
+  <input type="text" name="company" />
+  <input type="email" name="email" />
+  <input type="tel" name="phone" />
+  <textarea name="message"></textarea>
+  <input type="text" name="categories" />
+  <input type="text" name="lang" />
+</form>
     <div id="root"></div>
     <noscript>Creative Mind — Mind Made Visible. This site needs JavaScript to run.</noscript>
     <script type="module" src="/src/main.tsx"></script>

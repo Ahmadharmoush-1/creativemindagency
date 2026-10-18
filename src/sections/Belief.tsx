@@ -10,6 +10,7 @@ import {
   useCanvas,
   useFixedPin,
   useGsap,
+  useMedia,
 } from '../lib/gsap'
 import { ui } from '../content/ui'
 import { Eyebrow, Lines } from '../components/Brand'
@@ -28,7 +29,6 @@ const SIGNAL_IMAGES = [
 ]
 // Place your looping background video at public/videos/belief-mountain.mp4.
 const BELIEF_VIDEO = '/videos/belief-mountain.mp4'
-
 // Sparks leaving the sun: angle, distance (in sun radii), size, seconds.
 const SPARKS = [0, 55, 120, 190, 250, 310].map((deg, i) => ({
   deg,
@@ -37,6 +37,10 @@ const SPARKS = [0, 55, 120, 190, 250, 310].map((deg, i) => ({
   dur: 5.5 + i * 0.7,
   delay: -i * 1.9,
 }))
+// Below the site's lg breakpoint the ring is not scroll-driven: it is drawn fully assembled
+// and turns slowly around the sun (radians per second, about two minutes a turn).
+const MOBILE_QUERY = '(max-width: 1023px)'
+const ORBIT_SPEED = 0.05
 /**
  * Seven independent signals settle into one connected system.
  * Images follow the original animated node positions.
@@ -44,7 +48,9 @@ const SPARKS = [0, 55, 120, 190, 250, 310].map((deg, i) => ({
 export function Belief() {
   const { tr, lang, rtl } = useLang()
   const root = useRef<HTMLElement>(null)
-  useFixedPin(root, '.scrolly-pin')
+  const mobile = useMedia(MOBILE_QUERY)
+  // Phones: no pin and no tall track, the section is one screen of normal page.
+  useFixedPin(root, mobile ? null : '.scrolly-pin', [mobile])
   const lastFrame = useRef('')
   const progress = useRef(prefersReduced() ? 1 : 0)
   const nodeImages = useRef<HTMLImageElement[]>([])
@@ -70,6 +76,8 @@ export function Belief() {
       nodeImages.current = SIGNAL_IMAGES.map((name) => {
         const image = new Image()
         image.decoding = 'async'
+        // Without a draw loop (reduced motion) the canvas must be told to paint the new image.
+        image.onload = () => canvas.current?.dispatchEvent(new Event('repaint'))
         image.src = `/images/signals/${name}-${size}.webp`
         return image
       })
@@ -94,17 +102,26 @@ export function Belief() {
       nodeImages.current = []
     }
   }, [])
-  useGsap(root, () => {
-    if (prefersReduced()) return
-    ScrollTrigger.create({
-      trigger: root.current,
-      start: 'top 60%',
-      end: 'bottom bottom',
-      onUpdate: (s) => {
-        progress.current = s.progress
-      },
-    })
-  })
+  useGsap(
+    root,
+    () => {
+      // Phones and reduced motion: the ring is always fully assembled; scrolling never moves it.
+      if (mobile || prefersReduced()) {
+        progress.current = 1
+        return
+      }
+      const trigger = ScrollTrigger.create({
+        trigger: root.current,
+        start: 'top 60%',
+        end: 'bottom bottom',
+        onUpdate: (s) => {
+          progress.current = s.progress
+        },
+      })
+      progress.current = trigger.progress
+    },
+    [mobile],
+  )
   const seeds = useMemo(() => {
     const r = rng(11)
     return ui.belief.signals.map((_, i) => ({
@@ -117,11 +134,11 @@ export function Belief() {
   }, [])
   const canvas = useCanvas(
     (ctx, w, h, t) => {
-      const p = progress.current
-      const mobile = w < 900
-      // Touch screens: repaint only when something actually changed (scroll position,
-      // size, language or an image finishing loading), not sixty times a second.
-      if (window.matchMedia('(pointer: coarse)').matches) {
+      const p = mobile ? 1 : progress.current
+      // Touch screens with the scroll-driven ring (tablets at desktop width): repaint only when
+      // something actually changed (scroll position, size, language or an image finishing
+      // loading), not sixty times a second. The phone ring turns, so every frame is new.
+      if (!mobile && window.matchMedia('(pointer: coarse)').matches) {
         const loaded = nodeImages.current.filter((image) => image.complete).length
         const frame = `${w}|${h}|${p.toFixed(4)}|${loaded}|${lang}`
         if (frame === lastFrame.current) return
@@ -138,11 +155,14 @@ export function Belief() {
       ctx.clearRect(0, 0, w, h)
       const n = seeds.length
       if (n === 0) return
+      // Phones: the whole ring turns together, so it stays evenly spaced. `t` is 0 under
+      // reduced motion (one still frame), which leaves it at rest.
+      const orbit = mobile ? t * ORBIT_SPEED : t * 0.06 * e * idle
       const pts = seeds.map((s, i) => {
         const a =
           -Math.PI / 2 +
           (i / n) * Math.PI * 2 +
-          t * 0.06 * e * idle
+          orbit
         const fx = cx + Math.cos(a) * R
         const fy = cy + Math.sin(a) * R * (mobile ? 0.92 : 1)
         const spreadX = mobile ? w * 0.42 : w * 0.24
@@ -260,7 +280,7 @@ export function Belief() {
       ctx.save()
       ctx.imageSmoothingEnabled = true
       ctx.imageSmoothingQuality = 'high'
-      ctx.font = `500 ${mobile ? (w < 600 ? 9.5 : 11) : 12}px ${
+      ctx.font = `700 ${mobile ? (w < 600 ? 11 : 12) : 14}px ${
         lang === 'ar'
           ? '"Noto Kufi Arabic Variable"'
           : '"Montserrat Variable"'
@@ -307,7 +327,7 @@ export function Belief() {
             : ui.belief.signals[i].en.toUpperCase()
         const right = x >= cx
         const labelOffset = size / 2 + 12
-        ctx.fillStyle = 'rgba(255,255,255,0.78)'
+        ctx.fillStyle = 'rgba(255,255,255,1)'
         if (mobile) {
           // No room beside the images on a phone: the label sits underneath.
           ctx.textAlign = 'center'
@@ -323,13 +343,14 @@ export function Belief() {
       })
       ctx.restore()
     },
-    [lang, rtl, seeds],
+    [lang, rtl, seeds, mobile],
   )
     return (
     <section
       ref={root}
       className="scrolly"
-      style={{ ['--scrolly-h' as string]: '230vh' }}
+      // Phones: the track collapses to the stage itself, with no scroll spent on assembly.
+      style={{ ['--scrolly-h' as string]: mobile ? 'auto' : '230vh' }}
     >
       <div
         // Keep the existing image as a fallback beneath the looping video.
@@ -351,31 +372,31 @@ export function Belief() {
               textShadow: '0 2px 16px rgba(0, 0, 0, 0.65)',
             }}
           >
-            <Eyebrow className="mb-4 text-white/80 lg:mb-6 lg:text-white/70">
+            <Eyebrow className="mb-4 !text-[0.85rem] !font-bold !text-white sm:!text-[0.95rem] lg:mb-6 lg:!text-[1rem]">
               {tr(ui.belief.eyebrow)}
             </Eyebrow>
             <Lines
-              className="t-title lg:!text-[clamp(2.2rem,4.4vw,4.6rem)]"
+              className="t-title !text-[clamp(1.75rem,5.5vw,2.75rem)] !font-bold lg:!text-[clamp(2rem,3.9vw,4rem)]"
               lines={[
-                <span key="belief-line-1" className="font-light">
+                <span key="belief-line-1" className="!font-bold">
                   {tr(ui.belief.l1)}
                 </span>,
-                <span key="belief-line-2">
+                <span key="belief-line-2" className="!font-bold">
                   {tr(ui.belief.l2a)}
-                  <span className="text-signal">
+                  <span className="text-signal !font-bold">
                     {tr(ui.belief.l2b)}
                   </span>
                 </span>,
               ]}
             />
             <p
-              className="mt-4 max-w-[44ch] font-medium lg:mt-9 lg:text-lg"
+              className="mt-4 max-w-[44ch] !text-[1.125rem] !font-bold !leading-[1.65] text-white sm:!text-[1.25rem] lg:mt-7 lg:!text-[1.375rem]"
               data-reveal="up"
             >
               {tr(ui.belief.p1)}
             </p>
             <p
-              className="mt-3 max-w-[50ch] text-sm leading-relaxed text-white/85 max-lg:[@media(max-height:760px)]:hidden lg:text-base lg:text-white/65 rtl:leading-loose"
+              className="mt-3 max-w-[50ch] !text-[1rem] !font-semibold !leading-[1.75] text-white/95 max-lg:[@media(max-height:760px)]:hidden sm:!text-[1.0625rem] lg:!text-[1.125rem]"
               data-reveal="up"
             >
               {tr(ui.belief.p2)}
@@ -403,7 +424,6 @@ function BeliefVideo() {
     />
   )
 }
-
 function BeliefSun({ sunRef, rtl }: { sunRef: RefObject<HTMLDivElement>; rtl: boolean }) {
   return (
     <div
@@ -468,11 +488,13 @@ function BeliefFxStyle() {
         opacity: var(--core);
         transform: scale(calc(0.55 + 0.45 * var(--core)));
       }
-      @media (max-width: 899px) {
+      @media (max-width: 1023px) {
         .belief-sun {
           --r: 16px;
           left: 50%;
           top: 75.5%;
+          /* The canvas is 100svh tall inside a 100lvh stage: follow the canvas, not the stage. */
+          top: 75.5svh;
         }
       }
       .belief-sun > span {
