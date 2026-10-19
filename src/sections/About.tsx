@@ -1,21 +1,19 @@
 import { Fragment, useEffect, useRef, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { useLang } from '../lib/i18n'
 import { useReady } from '../lib/ready'
-import { ScrollTrigger, gsap, isTouch, prefersReduced, useGsap } from '../lib/gsap'
+import { ScrollTrigger, gsap, prefersReduced, useGsap, useMedia } from '../lib/gsap'
 import { ui } from '../content/ui'
 import './about.css'
-
 /**
  * About — "One mind. Multiple disciplines."
  *
- * The portrait is the mind: it opens out of the visor, blinks, and (on desktop) sends a signal
+ * The portrait is the mind: it opens out of the visor, blinks, and sends a signal
  * line to each discipline orbiting it. The heading builds letter by letter, the lead lights up
  * word by word as it scrolls past, the principles deal in as cards, and two crossing bands carry
  * the disciplines out of the section.
  * Styles and the looping layers are in about.css; nothing here pins, so phones scroll natively.
  */
-
-/** Where each discipline chip sits around the card, in % of the card (desktop only). */
+/** Discipline locations, in percent of the portrait card. */
 const ORBIT = [
   { x: -6, y: 14 },
   { x: -11, y: 42 },
@@ -25,11 +23,18 @@ const ORBIT = [
   { x: 108, y: 51 },
   { x: 103, y: 73 },
 ]
-
 // The visor in the card's 300x400 viewBox (an ellipse): every signal line leaves from its rim.
 const VISOR = { x: 127, y: 120, rx: 64, ry: 70 }
-
-const LINKS = ORBIT.map(({ x, y }) => {
+const MOBILE_ORBIT = [
+  { x: 10, y: 12 },
+  { x: 10, y: 46 },
+  { x: 10, y: 72 },
+  { x: 90, y: 8 },
+  { x: 90, y: 30 },
+  { x: 90, y: 53 },
+  { x: 90, y: 76 },
+]
+const makeLinks = (positions: typeof ORBIT) => positions.map(({ x, y }) => {
   const X = (x / 100) * 300
   const Y = (y / 100) * 400
   const a = Math.atan2(Y - VISOR.y, X - VISOR.x)
@@ -42,9 +47,7 @@ const LINKS = ORBIT.map(({ x, y }) => {
     sy: r(sy),
   }
 })
-
 const pad = (n: number) => String(n).padStart(2, '0')
-
 /** A line split for animation: letters for Latin, whole words for Arabic (joined letters must stay together). */
 function Split({ text, perLetter }: { text: string; perLetter: boolean }) {
   const m = text.match(/^(.*?)([.؟?!])$/)
@@ -83,7 +86,6 @@ function Split({ text, perLetter }: { text: string; perLetter: boolean }) {
     </>
   )
 }
-
 /** Four-point star between the band words. */
 function Star({ className = '' }: { className?: string }) {
   return (
@@ -92,9 +94,11 @@ function Star({ className = '' }: { className?: string }) {
     </svg>
   )
 }
-
 function Portrait() {
   const { tr } = useLang()
+  const desktop = useMedia('(min-width: 1024px)')
+  const positions = desktop ? ORBIT : MOBILE_ORBIT
+  const links = makeLinks(positions)
   return (
     <figure className="ab-portrait">
       <div className="ab-stage-wrap">
@@ -103,7 +107,6 @@ function Portrait() {
           <svg className="ab-aline" viewBox="0 0 400 520" aria-hidden="true">
             <path d="M10 520 200 10 390 520" pathLength={1} />
           </svg>
-
           <div className="ab-card">
             <div className="ab-par">
               <div className="ab-imgbox">
@@ -127,7 +130,6 @@ function Portrait() {
             </div>
             <span className="ab-scan" aria-hidden="true" />
             <span className="ab-shade" aria-hidden="true" />
-
             <div className="ab-hud-top latin" aria-hidden="true">
               <span className="ab-live" />
               CM—01
@@ -148,15 +150,13 @@ function Portrait() {
               </div>
             </div>
           </div>
-
           <span className="ab-corner ab-c-tl" aria-hidden="true" />
           <span className="ab-corner ab-c-tr" aria-hidden="true" />
           <span className="ab-corner ab-c-bl" aria-hidden="true" />
           <span className="ab-corner ab-c-br" aria-hidden="true" />
-
           <div className="ab-orbit" aria-hidden="true">
             <svg className="ab-links" viewBox="0 0 300 400">
-              {LINKS.map((l, i) => (
+              {links.map((l, i) => (
                 <g key={i}>
                   <path className="ab-link" d={l.d} pathLength={1} />
                   <path className="ab-pulse" d={l.d} pathLength={1} style={{ animationDelay: `${-i * 0.45}s` }} />
@@ -168,7 +168,7 @@ function Portrait() {
               <span
                 key={d.en}
                 className="ab-chip"
-                style={{ '--x': `${ORBIT[i].x}%`, '--y': `${ORBIT[i].y}%`, '--d': `${-i * 0.8}s` } as CSSProperties}
+                style={{ '--x': `${positions[i % positions.length].x}%`, '--y': `${positions[i % positions.length].y}%`, '--d': `${-i * 0.8}s` } as CSSProperties}
               >
                 <span className="ab-chip-i">
                   <span className="ab-chip-dot" />
@@ -179,7 +179,6 @@ function Portrait() {
           </div>
         </div>
       </div>
-
       <figcaption className="ab-cap">
         <span className="sphere ab-cap-dot block shrink-0" aria-hidden="true" />
         <span>{tr(ui.about.charNote)}</span>
@@ -187,7 +186,6 @@ function Portrait() {
     </figure>
   )
 }
-
 function Principles() {
   const { tr } = useLang()
   // Spotlight follows the pointer across a card.
@@ -224,7 +222,6 @@ function Principles() {
     </ol>
   )
 }
-
 /** Two crossing bands of disciplines, scrolling in opposite directions. */
 function Bands() {
   const { tr } = useLang()
@@ -253,7 +250,6 @@ function Bands() {
     </div>
   )
 }
-
 export function About() {
   const { tr, lang, rtl } = useLang()
   const ready = useReady()
@@ -261,18 +257,18 @@ export function About() {
   const title = ui.about.title[lang]
   const perLetter = lang !== 'ar'
   const lead = tr(ui.about.lead).split(' ')
-
   // Loops hold still while the section is off screen.
   useEffect(() => {
     const el = root.current
-    if (!el) return
+    if (!el || !('IntersectionObserver' in window)) return
     const io = new IntersectionObserver(([e]) => el.toggleAttribute('data-off', !e.isIntersecting), {
       rootMargin: '200px 0px',
     })
     io.observe(el)
     return () => io.disconnect()
   }, [])
-
+  // Heading, watermark and lead: their letters/words are split per language, so these rebuild
+  // on a switch (and land on their finished state when already scrolled past).
   useGsap(
     root,
     () => {
@@ -281,9 +277,6 @@ export function About() {
       const q = gsap.utils.selector(el)
       const one = (sel: string) => q(sel)[0] as HTMLElement
       const once = (trigger: Element, start = 'top 85%') => ({ trigger, start, once: true })
-      const fine = !isTouch()
-      const cleanups: (() => void)[] = []
-
       /* ---- eyebrow + heading ---- */
       gsap.set(q('.ab-eb-dot'), { scale: 0 })
       gsap.set(q('.ab-eb-line'), { scaleX: 0 })
@@ -300,14 +293,36 @@ export function About() {
         .to(q('.ab-l2 .ab-ch'), { yPercent: 0, rotate: 0, duration: 1.15, ease: 'expo.out', stagger: 0.028 }, 0.45)
         .to(q('.ab-l2 .ab-ch'), { color: '#fff', duration: 0.55, ease: 'power1.out', stagger: 0.035 }, 0.95)
         .to(q('.ab-dotp'), { scale: 1, rotate: 0, duration: 1.1, ease: 'elastic.out(1, 0.45)' }, 1.25)
-
       // The outlined MIND drifts across behind the heading.
       gsap.fromTo(
         q('.ab-wm'),
         { xPercent: rtl ? -8 : 8 },
         { xPercent: rtl ? 10 : -10, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } },
       )
-
+      /* ---- lead: lights up word by word with the scroll ---- */
+      gsap.fromTo(
+        q('.ab-lw'),
+        { opacity: 0.16 },
+        {
+          opacity: 1,
+          ease: 'none',
+          stagger: 0.1,
+          scrollTrigger: { trigger: one('.ab-lead'), start: 'top 85%', end: 'bottom 55%', scrub: 0.4 },
+        },
+      )
+    },
+    [ready, lang],
+  )
+  useGsap(
+    root,
+    () => {
+      if (!ready || prefersReduced()) return
+      const el = root.current!
+      const q = gsap.utils.selector(el)
+      const one = (sel: string) => q(sel)[0] as HTMLElement
+      const once = (trigger: Element, start = 'top 85%') => ({ trigger, start, once: true })
+      const fine = window.matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)').matches
+      const cleanups: (() => void)[] = []
       /* ---- portrait ---- */
       const stage = one('.ab-stage')
       const card = one('.ab-card')
@@ -322,7 +337,6 @@ export function About() {
       gsap.set(q('.ab-pulse, .ab-node'), { opacity: 0 })
       gsap.set(q('.ab-chip'), { opacity: 0, scale: 0.2, z: 60 })
       gsap.set(q('.ab-cap > *'), { opacity: 0, y: 18 })
-
       const counters = q('[data-count]') as HTMLElement[]
       const counting = gsap.timeline()
       counters.forEach((n) => {
@@ -332,7 +346,6 @@ export function About() {
         counting.to(box, { v: to, duration: 1.5, ease: 'power2.out', onUpdate: () => void (n.textContent = pad(Math.round(box.v))) }, 0)
       })
       cleanups.push(() => counters.forEach((n) => (n.textContent = pad(Number(n.dataset.count)))))
-
       gsap
         .timeline({ scrollTrigger: once(stage, 'top 80%') })
         .to(card, {
@@ -354,7 +367,6 @@ export function About() {
         .to(q('.ab-chip'), { opacity: 1, scale: 1, duration: 1, ease: 'back.out(2.2)', stagger: 0.07 }, 1.7)
         .to(q('.ab-pulse'), { opacity: 1, duration: 0.6, stagger: 0.07 }, 2.3)
         .to(q('.ab-cap > *'), { opacity: 1, y: 0, duration: 1, ease: 'expo.out', stagger: 0.1 }, 1.5)
-
       // Parallax inside the card, and the A drawn as the portrait scrolls through.
       gsap.fromTo(
         q('.ab-par'),
@@ -366,9 +378,9 @@ export function About() {
         { strokeDashoffset: 1 },
         { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: stage, start: 'top 85%', end: 'center 40%', scrub: 0.6 } },
       )
-
       // Mouse: the stage tilts in 3D, the chips float in front of it.
-      if (fine) {
+      const pointerMotion = gsap.matchMedia()
+      pointerMotion.add('(min-width: 1024px) and (hover: hover) and (pointer: fine)', () => {
         const wrap = one('.ab-stage-wrap')
         const rx = gsap.quickTo(stage, 'rotationX', { duration: 0.9, ease: 'power3.out' })
         const ry = gsap.quickTo(stage, 'rotationY', { duration: 0.9, ease: 'power3.out' })
@@ -383,24 +395,37 @@ export function About() {
         }
         wrap.addEventListener('pointermove', move)
         wrap.addEventListener('pointerleave', leave)
-        cleanups.push(() => {
+        return () => {
           wrap.removeEventListener('pointermove', move)
           wrap.removeEventListener('pointerleave', leave)
-        })
-      }
-
-      /* ---- lead: lights up word by word with the scroll ---- */
-      gsap.fromTo(
-        q('.ab-lw'),
-        { opacity: 0.16 },
-        {
-          opacity: 1,
-          ease: 'none',
-          stagger: 0.1,
-          scrollTrigger: { trigger: one('.ab-lead'), start: 'top 85%', end: 'bottom 55%', scrub: 0.4 },
+        }
+      })
+      cleanups.push(() => pointerMotion.revert())
+      // Phones use a gentle automatic tilt; native scrolling stays untouched.
+      const mobileMotion = gsap.matchMedia()
+      mobileMotion.add(
+        '(prefers-reduced-motion: no-preference) and (max-width: 1023px)',
+        () => {
+          gsap.fromTo(stage,
+            { rotationX: -1.5, rotationY: -2 },
+            {
+              rotationX: 1.5,
+              rotationY: 2,
+              duration: 3.8,
+              repeat: -1,
+              yoyo: true,
+              ease: 'sine.inOut',
+              scrollTrigger: {
+                trigger: stage,
+                start: 'top bottom',
+                end: 'bottom top',
+                toggleActions: 'play pause resume pause',
+              },
+            },
+          )
         },
       )
-
+      cleanups.push(() => mobileMotion.revert())
       /* ---- principles ---- */
       const twoCols = window.matchMedia('(min-width: 640px)').matches
       q('.ab-pr-cell').forEach((cell, i) => {
@@ -420,14 +445,12 @@ export function About() {
           .to(c('.ab-pr-t'), { yPercent: 0, duration: 1.05, ease: 'expo.out' }, 0.32)
           .to(c('.ab-pr-d'), { opacity: 1, y: 0, duration: 0.9, ease: 'expo.out' }, 0.5)
       })
-
       /* ---- bands: they cross as they scroll in ---- */
       const bands = one('.ab-bands')
       const [bandA, bandB] = q('.ab-band')
       const crossing = { trigger: bands, start: 'top bottom', end: 'center 55%', scrub: 0.5 }
       gsap.fromTo(bandA, { rotate: 0, xPercent: -6 }, { rotate: -3, xPercent: 0, ease: 'none', scrollTrigger: crossing })
       gsap.fromTo(bandB, { rotate: 0, xPercent: 6 }, { rotate: 4, xPercent: 0, ease: 'none', scrollTrigger: { ...crossing } })
-
       // Desktop: scroll speed pushes the bands faster and leans them.
       if (fine) {
         const skew = gsap.quickTo(one('.ab-bands-in'), 'skewX', { duration: 0.45, ease: 'power3.out' })
@@ -457,19 +480,17 @@ export function About() {
           loops.forEach((a) => (a.playbackRate = 1))
         })
       }
-
       return () => cleanups.forEach((f) => f())
     },
-    [ready, lang],
+    // Same elements in both languages: a language switch only swaps their text.
+    [ready],
   )
-
   return (
     <section ref={root} className="ab" aria-labelledby="about-title">
       <div className="ab-grid" aria-hidden="true" />
       <span className="ab-wm latin" aria-hidden="true">
         MIND
       </span>
-
       <div className="wrap ab-layout">
         <header className="ab-head">
           <p className="ab-eb">
@@ -489,9 +510,7 @@ export function About() {
             </span>
           </p>
         </header>
-
         <Portrait />
-
         <p className="ab-lead">
           {lead.map((w, i) => (
             <Fragment key={i}>
@@ -500,10 +519,8 @@ export function About() {
             </Fragment>
           ))}
         </p>
-
         <Principles />
       </div>
-
       <Bands />
     </section>
   )

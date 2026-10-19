@@ -22,6 +22,54 @@ export const setLenis = (l: Lenis | null) => {
 }
 export const getLenis = () => lenis
 
+/**
+ * True only while React commits a language change (set by LangProvider in ./i18n).
+ * Animation code that rebuilds because the language changed checks it to land on the state the
+ * current scroll position calls for, instead of replaying entrances or re-scrubbing from zero.
+ */
+let langCommit = false
+export const setLangSwitch = (on: boolean) => {
+  langCommit = on
+}
+
+/** A trigger's progress for the current scroll position, valid even before its first update. */
+export function liveProgress(st: ScrollTrigger) {
+  if (!st.start && !st.end) st.refresh()
+  return clamp01((st.scroll() - st.start) / Math.max(1, st.end - st.start))
+}
+
+const rebuilt: gsap.Context[] = []
+
+/**
+ * Marks a context as rebuilt by a language switch. LangProvider calls `flushRebuilds()` right
+ * after its single ScrollTrigger.refresh(), in the same frame, so these are settled against
+ * fresh measurements without measuring each trigger separately.
+ */
+export function settleRebuild(ctx: gsap.Context) {
+  if (langCommit) rebuilt.push(ctx)
+}
+
+/**
+ * Every scrubbed animation from a rebuilt context jumps to the scroll position's progress, and
+ * every one-shot entrance the reader has already scrolled past jumps to its end (no replay).
+ * Entrances still ahead of the reader are untouched and play as normal.
+ */
+export function flushRebuilds() {
+  for (const ctx of rebuilt.splice(0)) {
+    for (const item of ctx.data as unknown[]) {
+      if (!(item instanceof ScrollTrigger)) continue
+      const st = item
+      const anim = st.animation
+      if (!anim) continue
+      if (st.vars.scrub) {
+        anim.progress(liveProgress(st))
+      } else if (anim.repeat() !== -1 && st.scroll() >= st.start && (st.vars.once || !st.vars.toggleActions)) {
+        anim.progress(1)
+      }
+    }
+  }
+}
+
 /** Scoped GSAP context that reverts on unmount or when deps change. */
 export function useGsap(
   scope: RefObject<HTMLElement | null>,
@@ -33,6 +81,7 @@ export function useGsap(
     const ctx = gsap.context(() => {
       cleanup = fn()
     }, scope.current ?? undefined)
+    settleRebuild(ctx)
     return () => {
       cleanup?.()
       ctx.revert()
@@ -55,13 +104,25 @@ export function useMedia(query: string) {
 /**
  * Canvas that draws only while on screen, sized to its box at device pixel ratio.
  * With reduced motion it paints a single frame (and repaints on resize).
+ *
+ * The canvas, its observers and its draw loop are set up once. The loop always calls the latest
+ * `draw`, so a change in `deps` (the language, say) shows on the very next frame instead of
+ * tearing the canvas down, which blanked it for a frame.
  */
 export function useCanvas(
   draw: (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => void,
   deps: unknown[] = [],
 ) {
   const ref = useRef<HTMLCanvasElement>(null)
+  const drawRef = useRef(draw)
+  drawRef.current = draw
+  // Still canvases (reduced motion) have no loop: paint once more when what they show changes.
   useEffect(() => {
+    ref.current?.dispatchEvent(new Event('repaint'))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps)
+  useEffect(() => {
+    const draw = (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => drawRef.current(ctx, w, h, t)
     const canvas = ref.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
@@ -106,8 +167,7 @@ export function useCanvas(
       ro.disconnect()
       io.disconnect()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps)
+  }, [])
   return ref
 }
 

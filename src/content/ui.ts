@@ -96,8 +96,8 @@ export const ui = {
       ar: "نجمع في كرييتف مايند بين التفكير الاستراتيجي والإبداع وتحليل البيانات."
     } as L,
     p2: {
-      en: "Every brand we touch is built as a connected system — strategy, content, campaigns, media, digital experiences, automation and growth — engineered to compound over time.",
-      ar: "نربط استراتيجية علامتك بالمحتوى والحملات والقنوات التسويقية والتجارب الرقمية، ونستخدم الأتمتة لتسهيل العمل. لتتكامل جهودك التسويقية وتدعم نمو أعمالك مع الوقت."
+      en: "",
+      ar: ""
     } as L,
     signals: [
       {

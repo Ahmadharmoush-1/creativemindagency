@@ -12,6 +12,7 @@ import {
   useGsap,
   useMedia,
 } from '../lib/gsap'
+import { useNear } from '../lib/near'
 import { ui } from '../content/ui'
 import { Eyebrow, Lines } from '../components/Brand'
 // Match this order to ui.belief.signals.
@@ -408,16 +409,33 @@ export function Belief() {
   )
 }
 function BeliefVideo() {
+  const ref = useRef<HTMLVideoElement>(null)
+  // Attached once the section is near, so the hero film loads first; plays only while on screen.
+  const near = useNear(ref)
+  useEffect(() => {
+    const v = ref.current
+    if (!v || !near) return
+    v.muted = true
+    if (prefersReduced()) return
+    const play = () => void v.play().catch(() => {})
+    if (typeof IntersectionObserver === 'undefined') {
+      play()
+      return
+    }
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? play() : v.pause()))
+    io.observe(v)
+    return () => io.disconnect()
+  }, [near])
   return (
     <video
+      ref={ref}
       className="belief-video"
-      src={BELIEF_VIDEO}
+      src={near ? BELIEF_VIDEO : undefined}
       poster="/images/belief-mountain.webp"
-      autoPlay
       loop
       muted
       playsInline
-      preload="auto"
+      preload={!near ? 'none' : prefersReduced() ? 'metadata' : 'auto'}
       aria-hidden="true"
       tabIndex={-1}
       disablePictureInPicture

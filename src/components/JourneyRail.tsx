@@ -24,10 +24,11 @@ export function JourneyRail() {
         const active = Math.min(labels.length - 1, Math.floor(p * labels.length))
         labels.forEach((l, i) => l.classList.toggle('is-on', i === active))
       }
-      set(0)
-      ScrollTrigger.create({ start: 0, end: 'max', onUpdate: (s) => set(s.progress) })
+      const st = ScrollTrigger.create({ start: 0, end: 'max', onUpdate: (s) => set(s.progress) })
+      set(st.progress)
     },
-    [lang],
+    // Same elements in both languages (React only swaps their text), so no rebuild on a switch.
+    [],
   )
 
   return (

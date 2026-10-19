@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 13,
+            "activePatchIndex": 14,
             "patches": [
                 {
                     "date": 1792312408282,
@@ -60,6 +60,10 @@
                 {
                     "date": 1792313235283,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,11 +9,11 @@\n   // TODO: real inbox.\n   email: 'creativemind.com.sa@gmail.com',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n-    { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemind' },\n+    { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemindcomsa' },\n     { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },\n-    { label: 'X', href: 'https://x.com/creativemind' },\n+    { label: 'X', href: 'https://x.com/creativemindcom' },\n   ],\n }\n \n /**\n"
+                },
+                {
+                    "date": 1792402698255,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   tagline: { en: 'Mind Made Visible.', ar: 'نجعل الفكر مرئيًّا.' } as L,\n   // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).\n   whatsapp: '+966 50 975 2581',\n   // TODO: real inbox.\n-  email: 'creativemind.com.sa@gmail.com',\n+  email: 'info@creativemind.com.sa',\n   social: [\n     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },\n     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemindcomsa' },\n     { label: 'TikTok', href: 'https://www.tiktok.com/@creativemind.com.sa' },\n"
                 }
             ],
             "date": 1792312408282,

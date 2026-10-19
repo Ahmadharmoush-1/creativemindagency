@@ -10,6 +10,7 @@ import {
   rng,
   useCanvas,
 } from '../lib/gsap'
+import { useNear } from '../lib/near'
 
 const ASSETS = {
   a: '/images/brand/av-a.webp',
@@ -496,6 +497,20 @@ const styles = `
     will-change: auto;
   }
 }
+  @media (min-width: 768px) {
+  .cm-identity-scroll[dir='rtl'] .cm-id-stage {
+    inset-inline-start: auto;
+    inset-inline-end: auto;
+    left: 4%;
+    right: auto;
+  }
+}
+  @media (min-width: 768px) {
+  .cm-identity-scroll[dir='rtl'] .cm-id-body,
+  .cm-identity-scroll[dir='rtl'] .cm-id-services {
+    inset-inline-start: 6%;
+  }
+}
 `
 
 export function Symbols() {
@@ -522,6 +537,10 @@ export function Symbols() {
   const baseline = useRef<SVGPathElement>(null)
 
   const progress = useRef(0)
+  // The three art files are large lossless images. They start loading once the page has loaded
+  // and gone idle, or when the section is two screens away, whichever is first; never during
+  // the hero's own first load. Their boxes keep their size meanwhile (width/height attributes).
+  const art = useNear(root, '200% 0px', true)
 
   const particles = useMemo<Particle[]>(() => {
     const random = rng(17)
@@ -736,8 +755,10 @@ export function Symbols() {
         transformOrigin: '50% 70%',
       })
 
-      gsap.set(titleLines, { autoAlpha: 0.35, yPercent: 26 })
-      gsap.set(bodyCopy, { autoAlpha: 0.45, y: 14 })
+      // `headline` is attached to two blocks, so these lists can be empty; skip them then
+      // (GSAP warns about empty targets, and every tween here has an absolute position).
+      if (titleLines.length) gsap.set(titleLines, { autoAlpha: 0.35, yPercent: 26 })
+      if (bodyCopy.length) gsap.set(bodyCopy, { autoAlpha: 0.45, y: 14 })
       gsap.set(labelItems, { autoAlpha: 0, y: 22 })
 
       render()
@@ -749,7 +770,7 @@ export function Symbols() {
       })
 
       // Text and stage entrance.
-      timeline.to(titleLines, {
+      if (titleLines.length) timeline.to(titleLines, {
         autoAlpha: 1,
         yPercent: 0,
         duration: 0.14,
@@ -757,7 +778,7 @@ export function Symbols() {
         ease: 'power2.out',
       }, 0)
 
-      timeline.to(bodyCopy, {
+      if (bodyCopy.length) timeline.to(bodyCopy, {
         autoAlpha: 1,
         y: 0,
         duration: 0.12,
@@ -921,7 +942,9 @@ export function Symbols() {
       cleanup()
       context.revert()
     }
-  }, [lang])
+    // Built once. A language switch only changes text inside the scene (same elements), and the
+    // global ScrollTrigger.refresh() that follows it re-measures the scroll range.
+  }, [])
 
   const isArabic = lang === 'ar'
 
@@ -1047,7 +1070,7 @@ export function Symbols() {
 
           <img
             ref={a}
-            src={ASSETS.a}
+            src={art ? ASSETS.a : undefined}
             className="cm-id-asset cm-id-a"
             alt=""
             width={575}
@@ -1059,7 +1082,7 @@ export function Symbols() {
 
           <img
             ref={v}
-            src={ASSETS.v}
+            src={art ? ASSETS.v : undefined}
             className="cm-id-asset cm-id-v"
             alt=""
             width={485}
@@ -1092,7 +1115,7 @@ export function Symbols() {
 
           <img
             ref={sphere}
-            src={ASSETS.sphere}
+            src={art ? ASSETS.sphere : undefined}
             className="cm-id-asset cm-id-sphere"
             alt=""
             width={456}
@@ -1122,21 +1145,28 @@ export function Symbols() {
           </svg>
         </div>
 
-        <div className="cm-id-services">
-          <p>
-            {tr({
-              en: 'Brands / Campaigns / Systems / Funnels',
-              ar: 'العلامات التجارية / الحملات / الأنظمة / مسارات التحويل',
-            })}
-          </p>
+     <div
+  className={`cm-id-body${isArabic ? ' cm-id-arabic-title' : ''}`}
+  ref={headline}
+>
+  {/* Keep your existing headline, kicker, and description here */}
 
-          <p>
-            {tr({
-              en: 'Automations / Digital Experiences / Growth Engines',
-              ar: 'الأتمتة / التجارب الرقمية / محركات النمو',
-            })}
-          </p>
-        </div>
+  <div className="cm-id-services">
+    <p>
+      {tr({
+        en: 'Brands / Campaigns / Systems / Funnels',
+        ar: 'العلامات التجارية / الحملات / الأنظمة / مسارات التحويل',
+      })}
+    </p>
+
+    <p>
+      {tr({
+        en: 'Automations / Digital Experiences / Growth Engines',
+        ar: 'الأتمتة / التجارب الرقمية / محركات النمو',
+      })}
+    </p>
+  </div>
+</div>
 
         <div
           className="cm-id-caption-row"

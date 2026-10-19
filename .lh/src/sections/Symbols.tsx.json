@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 14,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1791883363238,
@@ -64,6 +64,18 @@
                 {
                     "date": 1792314040861,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -957,13 +957,13 @@\n               {tr({ en: 'With direction.', ar: 'برؤية واضحة.' })}\n             </span>\n           </h2>\n \n-          <p className=\"cm-id-arabic\" dir={isArabic ? 'ltr' : 'rtl'}>\n+          {/* <p className=\"cm-id-arabic\" dir={isArabic ? 'ltr' : 'rtl'}>\n             {isArabic\n               ? 'Creativity with direction.'\n               : 'إبداع يقوده التفكير الاستراتيجي'}\n-          </p>\n+          </p> */}\n \n           <p className=\"cm-id-kicker\">\n             {tr({\n               en: 'Premium · Strategic · Editorial · Cinematic',\n"
+                },
+                {
+                    "date": 1792402549733,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -495,8 +495,16 @@\n   .cm-id-stage .cm-id-asset {\n     will-change: auto;\n   }\n }\n+  @media (min-width: 768px) {\n+  .cm-identity-scroll[dir='rtl'] .cm-id-stage {\n+    inset-inline-start: auto;\n+    inset-inline-end: auto;\n+    left: 4%;\n+    right: auto;\n+  }\n+}\n `\n \n export function Symbols() {\n   const { tr, lang, rtl } = useLang()\n"
+                },
+                {
+                    "date": 1792402787627,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -503,8 +503,14 @@\n     left: 4%;\n     right: auto;\n   }\n }\n+  @media (min-width: 768px) {\n+  .cm-identity-scroll[dir='rtl'] .cm-id-body,\n+  .cm-identity-scroll[dir='rtl'] .cm-id-services {\n+    inset-inline-start: 6%;\n+  }\n+}\n `\n \n export function Symbols() {\n   const { tr, lang, rtl } = useLang()\n"
+                },
+                {
+                    "date": 1792402942190,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1135,24 +1135,31 @@\n             />\n           </svg>\n         </div>\n \n-        <div className=\"cm-id-services\">\n-          <p>\n-            {tr({\n-              en: 'Brands / Campaigns / Systems / Funnels',\n-              ar: 'العلامات التجارية / الحملات / الأنظمة / مسارات التحويل',\n-            })}\n-          </p>\n+     <div\n+  className={`cm-id-body${isArabic ? ' cm-id-arabic-title' : ''}`}\n+  ref={headline}\n+>\n+  {/* Keep your existing headline, kicker, and description here */}\n \n-          <p>\n-            {tr({\n-              en: 'Automations / Digital Experiences / Growth Engines',\n-              ar: 'الأتمتة / التجارب الرقمية / محركات النمو',\n-            })}\n-          </p>\n-        </div>\n+  <div className=\"cm-id-services\">\n+    <p>\n+      {tr({\n+        en: 'Brands / Campaigns / Systems / Funnels',\n+        ar: 'العلامات التجارية / الحملات / الأنظمة / مسارات التحويل',\n+      })}\n+    </p>\n \n+    <p>\n+      {tr({\n+        en: 'Automations / Digital Experiences / Growth Engines',\n+        ar: 'الأتمتة / التجارب الرقمية / محركات النمو',\n+      })}\n+    </p>\n+  </div>\n+</div>\n+\n         <div\n           className=\"cm-id-caption-row\"\n           ref={captions}\n           aria-label={tr({\n"
                 }
             ],
             "date": 1791883363238,

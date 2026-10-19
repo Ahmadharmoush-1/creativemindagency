@@ -45,7 +45,7 @@ function readLocation() {
 
 // Keep App mounted while switching pages, so the intro only runs once.
 export default function App() {
-  const { switching, tr, rtl } = useLang()
+  const { tr, rtl } = useLang()
   const [ready, setReady] = useState(false)
   const main = useRef<HTMLElement>(null)
   const [location, setLocation] = useState(readLocation)
@@ -133,13 +133,30 @@ export default function App() {
       ScrollTrigger.refresh()
       if (location.hash) scrollToHash(location.hash)
     })
-    // Refresh once lazy project images finish loading too.
-    const images = Array.from(main.current?.querySelectorAll('img') ?? [])
-    const refresh = () => { smoothScroll.current?.resize(); ScrollTrigger.refresh() }
-    images.forEach((image) => image.addEventListener('load', refresh))
+    // Re-measure the scroll scenes when the page's height really changes (an image without a
+    // reserved box, an opened article), once it has settled. Refreshing on every image load
+    // re-measured everything dozens of times and snapped scrubbed scenes mid-glide.
+    const el = main.current
+    let measured = el?.offsetHeight ?? 0
+    let timer = 0
+    const onRefresh = () => {
+      measured = el?.offsetHeight ?? 0
+    }
+    ScrollTrigger.addEventListener('refresh', onRefresh)
+    const ro = new ResizeObserver(() => {
+      if (!el || Math.abs(el.offsetHeight - measured) < 2) return
+      window.clearTimeout(timer)
+      timer = window.setTimeout(() => {
+        smoothScroll.current?.resize()
+        ScrollTrigger.refresh()
+      }, 200)
+    })
+    if (el) ro.observe(el)
     return () => {
       cancelAnimationFrame(frame)
-      images.forEach((image) => image.removeEventListener('load', refresh))
+      window.clearTimeout(timer)
+      ro.disconnect()
+      ScrollTrigger.removeEventListener('refresh', onRefresh)
     }
   }, [location, ready])
 
@@ -156,9 +173,7 @@ export default function App() {
         ref={main}
         id="main"
         tabIndex={-1}
-        className={`page-enter lang-fade outline-none ${
-          switching ? 'is-switching' : ''
-        }`}
+        className="page-enter outline-none"
       >
         {isHome ? (
           <Home />
@@ -190,11 +205,7 @@ export default function App() {
         )}
       </main>
 
-      <div
-        className={`lang-fade ${switching ? 'is-switching' : ''}`}
-      >
-        <Footer />
-      </div>
+      <Footer />
 
       {isHome && <JourneyRail />}
 

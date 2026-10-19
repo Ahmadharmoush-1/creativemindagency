@@ -18,8 +18,6 @@ export function InsightRow({ item }: { item: Insight }) {
 
   const toggle = () => {
     setOpen((value) => !value)
-
-    // Re-measure scroll scenes after the panel finishes resizing.
     window.setTimeout(() => ScrollTrigger.refresh(), 750)
   }
 
@@ -29,20 +27,20 @@ export function InsightRow({ item }: { item: Insight }) {
         open ? 'border-signal' : 'border-navy/15'
       }`}
     >
-      <div className="relative grid items-center gap-x-8 gap-y-4 py-7 md:grid-cols-[9rem_1fr_auto] md:py-10">
-        {/* Category — larger and bold */}
-        <p className="eyebrow flex items-center gap-3 !text-[0.85rem] !font-bold text-navy/85 lg:!text-[0.95rem]">
+      <div className="relative grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-2 py-5 md:grid-cols-[9rem_1fr_auto] md:gap-x-8 md:gap-y-4 md:py-10">
+        {/* Category */}
+        <p className="eyebrow col-start-1 row-start-1 flex items-center gap-2 !text-[0.6875rem] !font-bold !tracking-[0.1em] text-navy/85 md:col-auto md:row-auto md:gap-3 md:!text-[0.85rem] lg:!text-[0.95rem] rtl:!tracking-normal">
           <span
-            className="block h-1.5 w-1.5 shrink-0 rounded-full bg-signal transition-transform duration-500 ease-cine group-hover:translate-x-2 group-hover:scale-[1.8] rtl:group-hover:-translate-x-2"
+            className="block h-1 w-1 shrink-0 rounded-full bg-signal transition-transform duration-500 ease-cine md:h-1.5 md:w-1.5 md:group-hover:translate-x-2 md:group-hover:scale-[1.8] rtl:md:group-hover:-translate-x-2"
             aria-hidden="true"
           />
 
           {tr(categoryLabel(item.category))}
         </p>
 
-        <div className="min-w-0 transition-transform duration-700 ease-cine group-hover:translate-x-3 rtl:group-hover:-translate-x-3">
-          {/* Article title — slightly smaller and bold */}
-          <h3 className="text-[clamp(1.4rem,2.7vw,2.6rem)] font-bold leading-[1.15] tracking-tight rtl:leading-[1.45] rtl:tracking-normal">
+        {/* Title and excerpt */}
+        <div className="col-span-2 col-start-1 row-start-2 min-w-0 transition-transform duration-700 ease-cine md:col-span-1 md:col-auto md:row-auto md:group-hover:translate-x-3 rtl:md:group-hover:-translate-x-3">
+          <h3 className="text-[1.125rem] font-bold leading-[1.3] tracking-tight md:text-[clamp(1.4rem,2.7vw,2.6rem)] md:leading-[1.15] rtl:leading-[1.5] rtl:tracking-normal md:rtl:leading-[1.45]">
             <button
               type="button"
               onClick={toggle}
@@ -54,13 +52,13 @@ export function InsightRow({ item }: { item: Insight }) {
             </button>
           </h3>
 
-          {/* Excerpt — larger and bolder */}
-          <p className="mt-3 max-w-[56ch] text-[1.0625rem] font-semibold leading-relaxed text-navy/90 lg:text-[1.125rem]">
+          <p className="mt-2 max-w-[56ch] text-[0.8125rem] font-medium leading-[1.6] text-navy/90 md:mt-3 md:text-[1.0625rem] md:font-semibold md:leading-relaxed lg:text-[1.125rem]">
             {tr(item.excerpt)}
           </p>
         </div>
 
-        <div className="flex items-center gap-6">
+        {/* Reading time and arrow */}
+        <div className="col-start-2 row-start-1 flex items-center gap-2 md:col-auto md:row-auto md:gap-6">
           <div
             className="hidden h-24 w-36 overflow-hidden rounded-xl transition-[clip-path] duration-700 ease-cine [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0_0)] lg:block"
             aria-hidden="true"
@@ -71,15 +69,13 @@ export function InsightRow({ item }: { item: Insight }) {
             />
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Reading time — larger and bold */}
-            <p className="whitespace-nowrap text-sm font-bold text-navy/85 lg:text-base">
+          <div className="flex items-center gap-2 md:gap-4">
+            <p className="whitespace-nowrap text-[0.6875rem] font-semibold text-navy/85 md:text-sm md:font-bold lg:text-base">
               <span className={lang === 'en' ? 'latin' : ''}>
                 {item.minutes} {tr(ui.insights.min)}
               </span>
             </p>
 
-            {/* Separate clickable arrow: down when closed, up when open */}
             <button
               type="button"
               onClick={toggle}
@@ -89,7 +85,7 @@ export function InsightRow({ item }: { item: Insight }) {
                 en: `${open ? 'Collapse' : 'Expand'}: ${item.title.en}`,
                 ar: `${open ? 'طي المقال' : 'عرض المقال'}: ${item.title.ar}`,
               })}
-              className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 transition-[background-color,border-color,color] duration-300 hover:border-signal hover:bg-signal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal sm:h-14 sm:w-14 ${
+              className={`relative z-10 grid h-11 w-11 shrink-0 place-items-center rounded-full border transition-[background-color,border-color,color] duration-300 hover:border-signal hover:bg-signal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal md:h-14 md:w-14 md:border-2 ${
                 open
                   ? 'border-signal bg-signal text-white'
                   : 'border-navy/30 text-navy'
@@ -102,7 +98,7 @@ export function InsightRow({ item }: { item: Insight }) {
                 strokeWidth="2.25"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className={`h-6 w-6 transition-transform duration-300 motion-reduce:transition-none sm:h-7 sm:w-7 ${
+                className={`h-4 w-4 transition-transform duration-300 motion-reduce:transition-none md:h-7 md:w-7 ${
                   open ? 'rotate-180' : 'rotate-0'
                 }`}
                 aria-hidden="true"
@@ -124,15 +120,15 @@ export function InsightRow({ item }: { item: Insight }) {
         }}
         {...({ inert: open ? undefined : '' } as object)}
       >
-        <div className="overflow-hidden">
-          <div className="grid gap-x-8 pb-10 md:grid-cols-[9rem_1fr]">
-            <span aria-hidden="true" />
+        <div className="min-h-0 overflow-hidden">
+          <div className="grid gap-x-8 pb-6 md:grid-cols-[9rem_1fr] md:pb-10">
+            <span className="hidden md:block" aria-hidden="true" />
 
             <div className="max-w-[64ch]">
               {item.body.map((paragraph, index) => (
                 <p
                   key={index}
-                  className="mb-5 text-[1.125rem] font-semibold leading-[1.8] text-navy/90 last:mb-0 lg:text-[1.1875rem]"
+                  className="mb-3 text-[0.875rem] font-medium leading-[1.75] text-navy/90 last:mb-0 md:mb-5 md:text-[1.125rem] md:font-semibold md:leading-[1.8] lg:text-[1.1875rem]"
                 >
                   {tr(paragraph)}
                 </p>
@@ -152,19 +148,17 @@ export function Insights() {
   return (
     <section
       id="insights"
-      className="section on-white scroll-mt-20"
+      className="section on-white scroll-mt-20 !py-10 md:!py-20"
     >
       <div className="wrap">
-        <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div className="mb-6 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between md:gap-8">
           <div>
-            {/* Section label */}
-            <Eyebrow className="mb-7 !text-[0.95rem] !font-bold lg:!text-[1rem]">
+            <Eyebrow className="mb-3 !text-[0.75rem] !font-bold md:mb-7 md:!text-[0.95rem] lg:!text-[1rem]">
               {tr(ui.insights.eyebrow)}
             </Eyebrow>
 
-            {/* Smaller bold heading */}
             <Lines
-              className="t-display !text-[clamp(1.75rem,5.5vw,2.75rem)] !font-bold lg:!text-[clamp(2rem,3.9vw,4rem)]"
+              className="t-display !text-[1.75rem] !font-bold !leading-[1.15] md:!text-[clamp(1.75rem,5.5vw,2.75rem)] lg:!text-[clamp(2rem,3.9vw,4rem)] rtl:!leading-[1.45]"
               lines={[
                 <span key="title" className="!font-bold">
                   {ui.insights.title[lang][0]}
@@ -174,9 +168,8 @@ export function Insights() {
             />
           </div>
 
-          {/* Larger, bolder introduction */}
           <p
-            className="t-lead max-w-[32ch] !text-[1.125rem] !font-semibold !leading-[1.65] text-navy/90 sm:!text-[1.25rem] lg:!text-[1.375rem]"
+            className="t-lead max-w-[38ch] !text-[0.875rem] !font-medium !leading-[1.6] text-navy/90 md:max-w-[32ch] md:!text-[1.25rem] md:!font-semibold md:!leading-[1.65] lg:!text-[1.375rem]"
             data-reveal="up"
           >
             {tr(ui.insights.intro)}

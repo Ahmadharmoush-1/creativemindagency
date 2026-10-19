@@ -401,15 +401,9 @@ html.lenis body {
     opacity: 0;
   }
 }
-.lang-fade {
-  transition:
-    opacity 0.28s ease,
-    filter 0.28s ease;
-}
-.lang-fade.is-switching {
-  opacity: 0;
-  filter: blur(6px);
-}
+/* Language switches swap the text in place (LangProvider in src/lib/i18n.tsx). No filter on
+   <main>: a blur re-filters every video frame and makes <main> the containing block of the
+   phones' position: fixed stages, which made them jump. */
 
 /* ---------- form ---------- */
 .field {

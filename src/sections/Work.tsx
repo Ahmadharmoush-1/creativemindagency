@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLang } from '../lib/i18n'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { gsap, prefersReduced, useGsap } from '../lib/gsap'
@@ -608,7 +608,7 @@ export function Credibility() {
   )
 }
 export function Work({ categoryId }: { categoryId?: string } = {}) {
-  const { tr, rtl, lang } = useLang()
+  const { tr, rtl } = useLang()
   const activeId = categoryId ?? null
   const sectionRef = useRef<HTMLElement>(null)
   const categoryHeadingRef = useRef<HTMLHeadingElement>(null)
@@ -629,6 +629,10 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
     })
   // Ambient motion: the glow drifts toward the cursor, the outlined words slide
   // with the scroll, and the headline rises out of its mask once.
+  // Built once: a language switch only swaps text here. The direction-dependent values are read
+  // through `rtlRef`, and the refresh that follows a switch re-reads them (invalidateOnRefresh).
+  const rtlRef = useRef(rtl)
+  rtlRef.current = rtl
   useGsap(
     sectionRef,
     () => {
@@ -651,16 +655,16 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
       })
       gsap.fromTo(
         '.sw-ghost',
-        { xPercent: rtl ? -22 : 4 },
+        { xPercent: () => (rtlRef.current ? -22 : 4) },
         {
-          xPercent: rtl ? 4 : -22,
+          xPercent: () => (rtlRef.current ? 4 : -22),
           ease: 'none',
-          scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 0.8 },
+          scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 0.8, invalidateOnRefresh: true },
         },
       )
       const glow = section.querySelector<HTMLElement>('.sw-glow')
       if (!glow) return
-      gsap.set(glow, { x: section.offsetWidth * (rtl ? 0.18 : 0.82), y: 160 })
+      gsap.set(glow, { x: section.offsetWidth * (rtlRef.current ? 0.18 : 0.82), y: 160 })
       if (!window.matchMedia('(hover: hover)').matches) return
       const moveX = gsap.quickTo(glow, 'x', { duration: 1.4, ease: 'power3.out' })
       const moveY = gsap.quickTo(glow, 'y', { duration: 1.4, ease: 'power3.out' })
@@ -672,8 +676,20 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
       section.addEventListener('pointermove', follow)
       return () => section.removeEventListener('pointermove', follow)
     },
-    [lang],
+    [],
   )
+  // Touch screens: the resting glow moves to the reading side when the direction changes.
+  const firstDir = useRef(true)
+  useLayoutEffect(() => {
+    if (firstDir.current) {
+      firstDir.current = false
+      return
+    }
+    const section = sectionRef.current
+    const glow = section?.querySelector<HTMLElement>('.sw-glow')
+    if (!section || !glow || prefersReduced() || window.matchMedia('(hover: hover)').matches) return
+    gsap.set(glow, { x: section.offsetWidth * (rtl ? 0.18 : 0.82) })
+  }, [rtl])
   // The tiles (or the opened discipline's projects) arrive each time the view changes.
   useGsap(
     sectionRef,
@@ -724,7 +740,7 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
         })
       })
     },
-    [activeId, lang],
+    [activeId],
   )
   const ghostWords = workCategories.map((category) => tr(category.title))
   return (

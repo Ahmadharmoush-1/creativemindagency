@@ -7,7 +7,7 @@ export const site = {
   // TODO: real WhatsApp number in international format, digits only (e.g. 9665XXXXXXXX).
   whatsapp: '+966 50 975 2581',
   // TODO: real inbox.
-  email: 'creativemind.com.sa@gmail.com',
+  email: 'info@creativemind.com.sa',
   social: [
     { label: 'Instagram', href: 'https://www.instagram.com/creativemind.com.sa/' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/creativemindcomsa' },

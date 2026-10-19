@@ -19,9 +19,6 @@
     <meta property="og:image" content="/media/hero-poster.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- Hero poster: preload only the copy this screen will actually show. -->
-    <link rel="preload" as="image" href="/media/hero-poster-mobile.webp" fetchpriority="high" media="(max-width: 1023px) and (orientation: portrait)" />
-    <link rel="preload" as="image" href="/media/hero-poster.webp" fetchpriority="high" media="(min-width: 1024px), (orientation: landscape)" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -35,14 +32,24 @@
       // Set language, direction and motion preference before first paint to avoid layout shift.
       ;(function () {
         var d = document.documentElement
+        var l = 'en'
         try {
-          var l = localStorage.getItem('cm-lang')
+          l = localStorage.getItem('cm-lang')
           if (l === 'ar') {
             d.lang = 'ar'
             d.dir = 'rtl'
           }
         } catch (e) {}
         if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('js-motion')
+        // Hero poster: preload only the copy this screen and language will show
+        // (Arabic uses the mirrored posters). Same choice as heroPoster() in src/lib/heroMedia.ts.
+        var portrait = window.matchMedia('(max-width: 1023px) and (orientation: portrait)').matches
+        var p = document.createElement('link')
+        p.rel = 'preload'
+        p.as = 'image'
+        p.setAttribute('fetchpriority', 'high')
+        p.href = '/media/hero-poster' + (portrait ? '-mobile' : '') + (l === 'ar' ? '-ar' : '') + '.webp'
+        document.head.appendChild(p)
       })()
     </script>
   </head>

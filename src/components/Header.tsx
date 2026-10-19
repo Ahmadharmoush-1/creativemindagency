@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLang } from '../lib/i18n'
+import { useLang, type Lang } from '../lib/i18n'
+import { warmHeroPoster } from '../lib/heroMedia'
 import { getLenis } from '../lib/gsap'
 import { scrollToHash } from '../lib/scroll'
 import { nav } from '../content/site'
@@ -8,11 +9,13 @@ import { Cta, Mark, Wordmark } from './Brand'
 
 export function LangSwitch({ className = '' }: { className?: string }) {
   const { lang, setLang } = useLang()
+  // Hover, focus or touch-down comes before the click: start fetching that language's hero poster.
+  const intent = (l: Lang) => ({ onPointerEnter: () => warmHeroPoster(l), onPointerDown: () => warmHeroPoster(l), onFocus: () => warmHeroPoster(l) })
   const item = (active: boolean) =>
     `tap px-1.5 py-1 transition-colors duration-300 ${active ? 'text-signal' : 'text-white/60 hover:text-white'}`
   return (
     <div role="group" aria-label="Language / اللغة" className={`latin flex items-center gap-0.5 text-[0.78rem] font-medium ${className}`}>
-      <button type="button" className={item(lang === 'en')} aria-pressed={lang === 'en'} onClick={() => setLang('en')}>
+      <button type="button" className={item(lang === 'en')} aria-pressed={lang === 'en'} onClick={() => setLang('en')} {...intent('en')}>
         EN
       </button>
       <span className="text-white/30" aria-hidden="true">
@@ -24,6 +27,7 @@ export function LangSwitch({ className = '' }: { className?: string }) {
         className={`font-ar ${item(lang === 'ar')}`}
         aria-pressed={lang === 'ar'}
         onClick={() => setLang('ar')}
+        {...intent('ar')}
       >
         عربي
       </button>
@@ -40,7 +44,10 @@ export function Header() {
   const burger = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    const on = () => {
+    // At most one measurement per frame, however many scroll events arrive.
+    let frame = 0
+    const measure = () => {
+      frame = 0
       setScrolled(window.scrollY > 40)
       // Highlight the section the reader is in: the last one whose top has passed 40 % of the screen.
       const line = window.innerHeight * 0.4
@@ -51,9 +58,15 @@ export function Header() {
       }
       setCurrent(active)
     }
-    on()
+    const on = () => {
+      if (!frame) frame = requestAnimationFrame(measure)
+    }
+    measure()
     window.addEventListener('scroll', on, { passive: true })
-    return () => window.removeEventListener('scroll', on)
+    return () => {
+      window.removeEventListener('scroll', on)
+      cancelAnimationFrame(frame)
+    }
   }, [])
 
   const goTo = (hash: string, viaMenu = false) => (event: { preventDefault: () => void }) => {

@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react'
 import { useLang } from '../lib/i18n'
 import {
   ScrollTrigger,
+  liveProgress,
   prefersReduced,
   useGsap,
   useMedia,
@@ -42,6 +43,9 @@ export function Process() {
   const root = useRef<HTMLElement>(null)
   const desktop = useMedia('(min-width: 1024px)')
   const d = useMemo(() => journeyPath(rtl), [rtl])
+  // Read live by the scroll scene, so a language switch updates it without a rebuild.
+  const rtlRef = useRef(rtl)
+  rtlRef.current = rtl
   const stages = ui.process.stages
 
   useGsap(
@@ -58,6 +62,7 @@ export function Process() {
       if (!ball) return
 
       const set = (p: number) => {
+        const rtl = rtlRef.current
         if (desktop) {
           const path =
             el.querySelector<SVGPathElement>('.pr-path')
@@ -128,11 +133,15 @@ export function Process() {
         end: desktop ? 'bottom 55%' : 'bottom 60%',
         scrub: 0.8,
         onUpdate: (self) => set(self.progress),
+        // After a language switch's refresh: redraw along the mirrored path at once.
+        onRefresh: (self) => set(self.progress),
       })
+      // Rebuilt mid-page (a language switch): start where the scroll already is, not at zero.
+      set(liveProgress(trigger))
 
       return () => trigger.kill()
     },
-    [desktop, lang],
+    [desktop],
   )
 
   const stageCls =

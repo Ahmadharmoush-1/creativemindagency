@@ -2,14 +2,12 @@
    Layout and looping layers. Entrances and scroll effects live in About.tsx (GSAP).
    Elements that GSAP moves never carry a CSS transition or animation on the same property:
    the hover/loop styles sit on an inner element instead. */
-
 .ab {
   position: relative;
   isolation: isolate;
   overflow-x: clip;
   padding-block: clamp(5rem, 12vw, 10rem) clamp(3.5rem, 7vw, 6rem);
 }
-
 /* ---------- backdrop ---------- */
 .ab-grid {
   position: absolute;
@@ -48,7 +46,6 @@
   pointer-events: none;
   user-select: none;
 }
-
 /* ---------- layout ----------
    Phones: heading, portrait, lead, principles. Desktop: portrait on its own column. */
 .ab-layout {
@@ -89,7 +86,6 @@
     align-self: start;
   }
 }
-
 /* ---------- eyebrow + heading ---------- */
 .ab-eb {
   display: flex;
@@ -125,7 +121,6 @@
   display: block;
   padding-block: 0.15em;
 }
-
 .ab-title {
   font-size: clamp(2.15rem, 9.6vw, 3.75rem);
   line-height: 0.98;
@@ -174,7 +169,6 @@
   transform-origin: 50% 80%;
   text-shadow: 0 0 22px rgb(246 98 13 / 0.75);
 }
-
 /* ---------- lead ---------- */
 .ab-lead {
   max-width: 44ch;
@@ -186,7 +180,6 @@
 [dir='rtl'] .ab-lead {
   line-height: 1.95;
 }
-
 /* ---------- portrait ---------- */
 .ab-portrait {
   margin: 0;
@@ -236,7 +229,6 @@
   stroke-width: 2;
   stroke-dasharray: 1;
 }
-
 .ab-card {
   position: relative;
   aspect-ratio: 3 / 4;
@@ -327,7 +319,6 @@
   background: linear-gradient(0deg, rgb(3 14 46 / 0.92) 0%, rgb(3 14 46 / 0.35) 26%, transparent 46%);
   pointer-events: none;
 }
-
 /* HUD on the card */
 .ab-hud-top {
   position: absolute;
@@ -420,7 +411,6 @@
 [dir='rtl'] .ab-hud-link::after {
   animation-name: ab-run-rtl;
 }
-
 /* Viewfinder corners */
 .ab-corner {
   position: absolute;
@@ -461,19 +451,13 @@
   border-bottom-right-radius: 8px;
   transform-origin: 100% 100%;
 }
-
-/* Orbit: discipline chips wired to the visor (desktop only) */
+/* Orbit: visible and animated at every screen size. */
 .ab-orbit {
-  display: none;
-}
-@media (min-width: 1024px) {
-  .ab-orbit {
-    display: block;
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    transform-style: preserve-3d;
-  }
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform-style: preserve-3d;
 }
 .ab-links {
   position: absolute;
@@ -534,7 +518,6 @@
   background: var(--color-signal);
   box-shadow: 0 0 10px var(--color-signal);
 }
-
 .ab-cap {
   display: flex;
   align-items: flex-start;
@@ -551,7 +534,33 @@
   width: 0.6rem;
   height: 0.6rem;
 }
-
+/* Mobile labels use the matching MOBILE_ORBIT signal paths in About.tsx. */
+@media (max-width: 1023px) {
+  .ab-portrait {
+    max-width: min(330px, calc(100% - 3rem));
+  }
+  .ab-orbit { z-index: 3; }
+  .ab-chip { max-width: 42%; }
+  .ab-chip-i,
+  [dir='rtl'] .ab-chip-i {
+    justify-content: center;
+    gap: .3rem;
+    padding: .4rem .5rem;
+    white-space: normal;
+    text-align: center;
+    overflow-wrap: anywhere;
+    font-size: clamp(.58rem, 2.5vw, .72rem);
+    line-height: 1.45;
+    letter-spacing: 0;
+  }
+  .ab-chip-dot {
+    flex-shrink: 0;
+    width: .3rem;
+    height: .3rem;
+  }
+  .ab-card { border-radius: 1.5rem; }
+  .ab-cap { margin-top: 1.75rem; }
+}
 /* ---------- principles ---------- */
 .ab-principles {
   display: grid;
@@ -681,7 +690,6 @@
     transform: scale(1.9);
   }
 }
-
 /* ---------- crossing bands ---------- */
 .ab-bands {
   position: relative;
@@ -766,7 +774,6 @@
 .ab-band-b .ab-mq-sep {
   color: var(--color-signal);
 }
-
 /* ---------- loops ---------- */
 @keyframes ab-breathe {
   0%,
@@ -866,7 +873,6 @@
     transform: translateX(-50%);
   }
 }
-
 /* Off screen: every loop holds still. */
 .ab[data-off] *,
 .ab[data-off] *::before,
@@ -881,5 +887,29 @@
   }
   .ab-visor-i {
     opacity: 0.7;
+  }
+}
+@media (max-width: 1023px) {
+  .ab-orbit .ab-chip {
+    width: 42%;
+    max-width: none;
+  }
+
+  .ab-orbit .ab-chip-i {
+    justify-content: center;
+    gap: 5px;
+    padding: 7px 9px;
+    font-size: 11px;
+    line-height: 1.4;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+    text-align: center;
+  }
+
+  .ab-orbit .ab-chip-dot {
+    flex: 0 0 5px;
+    width: 5px;
+    height: 5px;
   }
 }
