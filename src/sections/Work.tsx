@@ -169,7 +169,7 @@ const existingWorkCategories: WorkCategory[] = [
     projects: [
       {
         id: 'jihan-fawaz',
-        name: { en: 'Jihan Fawaz', ar: 'جيهان فواز' },
+        name: { en: 'JIHAN FAWAZ', ar: 'جيهان فواز' },
         description: {
           en: 'Business Development',
           ar: 'تطوير الأعمال',
@@ -178,7 +178,7 @@ const existingWorkCategories: WorkCategory[] = [
       },
       {
         id: 'fatima-ibrahim',
-        name: { en: 'Fatima Ibrahim', ar: 'فاطمة إبراهيم' },
+        name: { en: 'FATIMA IBRAHIM', ar: 'فاطمة إبراهيم' },
         description: {
           en: 'Leadership Coaching',
           ar: 'التدريب القيادي',
@@ -210,49 +210,72 @@ export const brandingCollections: WorkCategory[] = [
     id: 'bags', title: { en: 'Bags', ar: 'الأكياس' },
     projects: projectsFromFiles('branding/bags', 'bag', [
       ['Bag-01.jpg', 'Bag project 01', 'مشروع أكياس 01'],
-      ['Bag-02.jpg', 'Bag project 02', 'مشروع أكياس 02'],
-      ['Bag-03.jpg', 'Bag project 03', 'مشروع أكياس 03'],
+      ['Bag-02.jpg', 'SCS', 'مشروع أكياس 02'],
+      ['Bag-03.jpg', 'Saudi Aramco', 'مشروع أكياس 03'],
     ]),
   },
   {
     id: 'brochure', title: { en: 'Brochure', ar: 'البروشورات' },
     projects: projectsFromFiles('branding/brochure', 'brochure', [
-      ['Brochure_Bifold-01.jpg', 'Brochure project 01', 'مشروع بروشور 01'],
-      ['Brochure_Bifold-02.jpg', 'Brochure project 02', 'مشروع بروشور 02'],
+      ['Brochure_Bifold-01.jpg', 'KHAN AL SABOON', 'مشروع بروشور 01'],
+      ['Brochure_Bifold-02.jpg', 'HMO', 'مشروع بروشور 02'],
+      ['Brochure_Bifold-03.jpg', 'ABBOTT', 'مشروع بروشور 03'],
+
+    ]),
+  },
+   {
+    id: 'rollup', title: { en: 'Roll-up', ar: 'اللويات القابلة للطي' },
+    projects: projectsFromFiles('branding/rollup', 'rollup', [
+      ['Rollup-01.jpg', 'SAUDI ARAMCO', 'مشروع لويت 01'],
+      ['Rollup-02.jpg', 'BARLEY MIX', 'مشروع لويت 02'],
+      ['Rollup-03.jpg', 'SCS X SAUDI ARAMCO', 'مشروع لويت 03'],
+      ['Rollup-04.jpg', 'SIMILAC', 'مشروع لويت 03'],
+      ['Rollup-05.jpg', 'ABBOTT', 'مشروع لويت 03'],
+      
+
+
     ]),
   },
   {
     id: 'company-profile', title: { en: 'Company Profile', ar: 'الملفات التعريفية' },
     projects: projectsFromFiles('branding/company profile', 'company-profile', [
-      ['Co-Pro-01.jpg', 'Company profile 01', 'ملف تعريفي 01'],
-      ['Co-Profile-01.jpg', 'Company profile 02', 'ملف تعريفي 02'],
-      ['Co-Profile-02.jpg', 'Company profile 03', 'ملف تعريفي 03'],
-      ['Company-Pro-02.jpg', 'Company profile 04', 'ملف تعريفي 04'],
+      ['Co-Pro-01.jpg', 'MIM', 'ملف تعريفي 01'],
+      ['Co-Profile-01.jpg', 'WEQAYAT WATAN', 'ملف تعريفي 02'],
+      ['Co-Profile-02.jpg', 'SCS', 'ملف تعريفي 03'],
+      ['Company-Pro-02.jpg', 'SNASCO', 'ملف تعريفي 04'],
+      ['Branding Identity MockUp Vol6.jpg', 'MIRA CARE', 'ملف تعريفي 04'],
+      ['Branding-01.jpg', 'IMDAD TURKI', 'ملف تعريفي 04'],
+      ['Identity.jpg', 'DMASS SOMY', 'ملف تعريفي 04'],
+      ['photo_2019-08-18_22-57-43.jpg', 'BARELY MIX', 'ملف تعريفي 04'],
+
     ]),
   },
   {
     id: 'magazine', title: { en: 'Magazine', ar: 'المجلات' },
     projects: projectsFromFiles('branding/magazine', 'magazine', [
-      ['MAG-01.jpg', 'Magazine project 01', 'مشروع مجلة 01'],
-      ['MAG-02.jpg', 'Magazine project 02', 'مشروع مجلة 02'],
-      ['MAG-03.jpg', 'Magazine project 03', 'مشروع مجلة 03'],
+      ['MAG-01.jpg', 'TOUJAR AL MAMLAKA', 'مشروع مجلة 01'],
+      ['MAG-02.jpg', 'ECONOMIC VISION', 'مشروع مجلة 02'],
+      ['MAG-03.jpg', 'AL IKTISADIYAH AL AALAMIYAH', 'مشروع مجلة 03'],
     ]),
   },
   {
     id: 'packaging', title: { en: 'Packaging', ar: 'التغليف' },
     projects: projectsFromFiles('branding/packaging', 'packaging', [
-      ['BOX 01.png', 'Packaging project 01', 'مشروع تغليف 01'],
-      ['BOX 02.png', 'Packaging project 02', 'مشروع تغليف 02'],
-      ['Box1.jpg', 'Packaging project 03', 'مشروع تغليف 03'],
-      ['i24.jpg', 'Packaging project 04', 'مشروع تغليف 04'],
+      ['BOX 01.png', 'ENSURE', 'مشروع تغليف 01'],
+      ['BOX 02.png', 'TOUCH CARE', 'مشروع تغليف 02'],
+      ['Box1.jpg', 'NESTLE', 'مشروع تغليف 03'],
+      ['i24.jpg', 'HEPCO', 'مشروع تغليف 04'],
+      ['Mockup2.jpg', 'ZAHRAT BAN', 'مشروع تغليف 04'],
+      ['Packaging1.jpg', 'SE7EB-BEES', 'مشروع تغليف 04'],
+      ['Screen Shot 2020-09-08 at 4.01.28 PM.png', 'FINE', 'مشروع تغليف 04'],
     ]),
   },
   {
     id: 'signs', title: { en: 'Signs', ar: 'اللوحات' },
     projects: projectsFromFiles('branding/signs', 'sign', [
-      ['o01.png', 'Sign project 01', 'مشروع لوحة 01'],
-      ['o05.png', 'Sign project 02', 'مشروع لوحة 02'],
-      ['o09.png', 'Sign project 03', 'مشروع لوحة 03'],
+      ['o01.png', 'RED RUBY', 'مشروع لوحة 01'],
+      ['o05.png', 'RED RUBY', 'مشروع لوحة 02'],
+      ['o09.png', 'PANASONIC', 'مشروع لوحة 03'],
     ]),
   },
 ]
@@ -260,40 +283,43 @@ export const brandingCollections: WorkCategory[] = [
 const threeDCategory: WorkCategory = {
   id: '3d', title: { en: '3D', ar: 'ثلاثي الأبعاد' },
   projects: projectsFromFiles('3D', '3d', [
-    ['Fine-Stand (2) 2x1.jpg', '3D project 01', 'مشروع ثلاثي الأبعاد 01'],
-    ['FSU2.jpg', '3D project 02', 'مشروع ثلاثي الأبعاد 02'],
-    ['LG -4.jpg', '3D project 03', 'مشروع ثلاثي الأبعاد 03'],
-    ['Preview1.jpg', '3D project 04', 'مشروع ثلاثي الأبعاد 04'],
-    ['Stand 1x1 (3).jpg', '3D project 05', 'مشروع ثلاثي الأبعاد 05'],
+    ['Fine-Stand (2) 2x1.jpg', 'FINE', 'مشروع ثلاثي الأبعاد 01'],
+    ['FSU2.jpg', 'PALMOLIVE', 'مشروع ثلاثي الأبعاد 02'],
+    ['LG -4.jpg', 'LG', 'مشروع ثلاثي الأبعاد 03'],
+    ['Preview1.jpg', 'BARLEY MIX', 'مشروع ثلاثي الأبعاد 04'],
+    ['Stand 1x1 (3).jpg', 'FINE', 'مشروع ثلاثي الأبعاد 05'],
+    ['Stand 3.jpg', 'COLGATE', 'مشروع ثلاثي الأبعاد 06'],
+    ['Stand2 2.jpg', 'SAUDI DENTAL SOCIETY', 'مشروع ثلاثي الأبعاد 06'],
+    ['Stand3.jpg', 'BAYT SHAHD', 'مشروع ثلاثي الأبعاد 06'],
+    ['Vis2.jpg', 'NESTLE FITNESS', 'مشروع ثلاثي الأبعاد 06'],
+    
   ]),
 }
 
 const extraProjects: Record<string, PortfolioProject[]> = {
   social: projectsFromFiles('socialmedia', 'social-new', [
-    ['FB-01.jpg', 'Social media project 01', 'مشروع تواصل اجتماعي 01'],
-    ['Insta-01.jpg', 'Social media project 02', 'مشروع تواصل اجتماعي 02'],
-    ['Insta-02.jpg', 'Social media project 03', 'مشروع تواصل اجتماعي 03'],
-    ['Insta-03.jpg', 'Social media project 04', 'مشروع تواصل اجتماعي 04'],
-    ['Insta-04.jpg', 'Social media project 05', 'مشروع تواصل اجتماعي 05'],
+    ['FB-01.jpg', '2RAVEL', 'مشروع تواصل اجتماعي 01'],
+   
+    ['Insta-02.jpg', 'FLAMINGO OF ISTANBUL', 'مشروع تواصل اجتماعي 03'],
+  
   ]),
   web: projectsFromFiles('website', 'website-new', [
-    ['Web Banner-03.jpg', 'Website project 01', 'مشروع موقع 01'],
-    ['Web Banner-04.jpg', 'Website project 02', 'مشروع موقع 02'],
-    ['Web Banner-05.jpg', 'Website project 03', 'مشروع موقع 03'],
-    ['Web Banner-06.jpg', 'Website project 04', 'مشروع موقع 04'],
-    ['Web Banner-07.jpg', 'Website project 05', 'مشروع موقع 05'],
-    ['Website-01.png', 'Website project 06', 'مشروع موقع 06'],
-    ['Website-03.png', 'Website project 07', 'مشروع موقع 07'],
+    ['Web Banner-03.jpg', 'A GRAND PETITE PAS', 'مشروع موقع 01'],
+    ['Web Banner-04.jpg', 'NOUH', 'مشروع موقع 02'],
+    ['Web Banner-05.jpg', 'BABY RUB', 'مشروع موقع 03'],
+    ['Web Banner-06.jpg', 'COLGATE', 'مشروع موقع 04'],
+    ['Web Banner-07.jpg', 'TURKEY TOURS PLANENERS', 'مشروع موقع 05'],
+    ['Website-01.png', 'PRPERTY SUPERIORS', 'مشروع موقع 06'],
+    ['Website-03.png', 'DND TOUR', 'مشروع موقع 07'],
   ]),
   funnels: projectsFromFiles('funnel', 'funnel-new', [
-    ['01-SalesLoop.jpg', 'Funnel project 01', 'مشروع مسار بيع 01'],
-    ['04-4tourisim.jpg', 'Funnel project 02', 'مشروع مسار بيع 02'],
-    ['05-EstePearl.jpg', 'Funnel project 03', 'مشروع مسار بيع 03'],
-    ['06-PropertySuperious.jpg', 'Funnel project 04', 'مشروع مسار بيع 04'],
-    ['07-WithFatima.jpg', 'Funnel project 05', 'مشروع مسار بيع 05'],
-    ['08-JihanFawaz.jpg', 'Funnel project 06', 'مشروع مسار بيع 06'],
-    ['09-Taj Clinics.jpg', 'Funnel project 07', 'مشروع مسار بيع 07'],
-    ['10-SMO.jpg', 'Funnel project 08', 'مشروع مسار بيع 08'],
+    ['01-SalesLoop.jpg', 'SALES LOOP', 'مشروع مسار بيع 01'],
+    ['04-4tourisim.jpg', 'TOURISM', 'مشروع مسار بيع 02'],
+    ['05-EstePearl.jpg', 'ESTE PEARL', 'مشروع مسار بيع 03'],
+    ['06-PropertySuperious.jpg', 'PRPERTY SUPERIORS', 'مشروع مسار بيع 04'],
+   
+    ['09-Taj Clinics.jpg', 'TAJ CLINCS', 'مشروع مسار بيع 07'],
+    ['10-SMO.jpg', 'SMO FUNNEL', 'مشروع مسار بيع 08'],
   ]),
 }
 
