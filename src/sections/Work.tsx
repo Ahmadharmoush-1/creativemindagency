@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useLang } from '../lib/i18n'
-import type { PointerEvent as ReactPointerEvent } from 'react'
-import { gsap, prefersReduced, useGsap } from '../lib/gsap'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 type Localized = {
   en: string
   ar: string
@@ -11,11 +11,13 @@ type PortfolioProject = {
   name: Localized
   description: Localized
   image: string
+  optimized?: boolean
 }
 type WorkCategory = {
   id: string
   title: Localized
   projects: PortfolioProject[]
+  collections?: WorkCategory[]
 }
 /*
   Files inside public are referenced without "/public".
@@ -24,7 +26,7 @@ type WorkCategory = {
   becomes:
   /images/work/sbat-branding.jpg
 */
-export const workCategories: WorkCategory[] = [
+const existingWorkCategories: WorkCategory[] = [
   {
     id: 'branding',
     title: { en: 'Branding', ar: 'الهوية البصرية' },
@@ -185,6 +187,145 @@ export const workCategories: WorkCategory[] = [
     ],
   },
 ]
+// EDIT NEW PROJECT NAMES HERE. Paths are relative to public/images/work.
+// Each row is [filename, English project name, Arabic project name].
+// Add another row to add more work; descriptions start blank on purpose.
+function projectsFromFiles(
+  folder: string,
+  prefix: string,
+  files: readonly (readonly [string, string, string])[],
+): PortfolioProject[] {
+  return files.map(([filename, en, ar], index) => ({
+    id: `${prefix}-${index + 1}`,
+    name: { en, ar },
+    description: { en: '', ar: '' },
+    image: `/images/work/${folder}/${filename}`,
+    optimized: false,
+  }))
+}
+
+export const brandingCollections: WorkCategory[] = [
+  {
+    id: 'bags', title: { en: 'Bags', ar: 'الأكياس' },
+    projects: projectsFromFiles('branding/bags', 'bag', [
+      ['Bag-01.jpg', 'Bag project 01', 'مشروع أكياس 01'],
+      ['Bag-02.jpg', 'Bag project 02', 'مشروع أكياس 02'],
+      ['Bag-03.jpg', 'Bag project 03', 'مشروع أكياس 03'],
+    ]),
+  },
+  {
+    id: 'brochure', title: { en: 'Brochure', ar: 'البروشورات' },
+    projects: projectsFromFiles('branding/brochure', 'brochure', [
+      ['Brochure_Bifold-01.jpg', 'Brochure project 01', 'مشروع بروشور 01'],
+      ['Brochure_Bifold-02.jpg', 'Brochure project 02', 'مشروع بروشور 02'],
+    ]),
+  },
+  {
+    id: 'company-profile', title: { en: 'Company Profile', ar: 'الملفات التعريفية' },
+    projects: projectsFromFiles('branding/company profile', 'company-profile', [
+      ['Co-Pro-01.jpg', 'Company profile 01', 'ملف تعريفي 01'],
+      ['Co-Profile-01.jpg', 'Company profile 02', 'ملف تعريفي 02'],
+      ['Co-Profile-02.jpg', 'Company profile 03', 'ملف تعريفي 03'],
+      ['Company-Pro-02.jpg', 'Company profile 04', 'ملف تعريفي 04'],
+    ]),
+  },
+  {
+    id: 'magazine', title: { en: 'Magazine', ar: 'المجلات' },
+    projects: projectsFromFiles('branding/magazine', 'magazine', [
+      ['MAG-01.jpg', 'Magazine project 01', 'مشروع مجلة 01'],
+      ['MAG-02.jpg', 'Magazine project 02', 'مشروع مجلة 02'],
+      ['MAG-03.jpg', 'Magazine project 03', 'مشروع مجلة 03'],
+    ]),
+  },
+  {
+    id: 'packaging', title: { en: 'Packaging', ar: 'التغليف' },
+    projects: projectsFromFiles('branding/packaging', 'packaging', [
+      ['BOX 01.png', 'Packaging project 01', 'مشروع تغليف 01'],
+      ['BOX 02.png', 'Packaging project 02', 'مشروع تغليف 02'],
+      ['Box1.jpg', 'Packaging project 03', 'مشروع تغليف 03'],
+      ['i24.jpg', 'Packaging project 04', 'مشروع تغليف 04'],
+    ]),
+  },
+  {
+    id: 'signs', title: { en: 'Signs', ar: 'اللوحات' },
+    projects: projectsFromFiles('branding/signs', 'sign', [
+      ['o01.png', 'Sign project 01', 'مشروع لوحة 01'],
+      ['o05.png', 'Sign project 02', 'مشروع لوحة 02'],
+      ['o09.png', 'Sign project 03', 'مشروع لوحة 03'],
+    ]),
+  },
+]
+
+const threeDCategory: WorkCategory = {
+  id: '3d', title: { en: '3D', ar: 'ثلاثي الأبعاد' },
+  projects: projectsFromFiles('3D', '3d', [
+    ['Fine-Stand (2) 2x1.jpg', '3D project 01', 'مشروع ثلاثي الأبعاد 01'],
+    ['FSU2.jpg', '3D project 02', 'مشروع ثلاثي الأبعاد 02'],
+    ['LG -4.jpg', '3D project 03', 'مشروع ثلاثي الأبعاد 03'],
+    ['Preview1.jpg', '3D project 04', 'مشروع ثلاثي الأبعاد 04'],
+    ['Stand 1x1 (3).jpg', '3D project 05', 'مشروع ثلاثي الأبعاد 05'],
+  ]),
+}
+
+const extraProjects: Record<string, PortfolioProject[]> = {
+  social: projectsFromFiles('socialmedia', 'social-new', [
+    ['FB-01.jpg', 'Social media project 01', 'مشروع تواصل اجتماعي 01'],
+    ['Insta-01.jpg', 'Social media project 02', 'مشروع تواصل اجتماعي 02'],
+    ['Insta-02.jpg', 'Social media project 03', 'مشروع تواصل اجتماعي 03'],
+    ['Insta-03.jpg', 'Social media project 04', 'مشروع تواصل اجتماعي 04'],
+    ['Insta-04.jpg', 'Social media project 05', 'مشروع تواصل اجتماعي 05'],
+  ]),
+  web: projectsFromFiles('website', 'website-new', [
+    ['Web Banner-03.jpg', 'Website project 01', 'مشروع موقع 01'],
+    ['Web Banner-04.jpg', 'Website project 02', 'مشروع موقع 02'],
+    ['Web Banner-05.jpg', 'Website project 03', 'مشروع موقع 03'],
+    ['Web Banner-06.jpg', 'Website project 04', 'مشروع موقع 04'],
+    ['Web Banner-07.jpg', 'Website project 05', 'مشروع موقع 05'],
+    ['Website-01.png', 'Website project 06', 'مشروع موقع 06'],
+    ['Website-03.png', 'Website project 07', 'مشروع موقع 07'],
+  ]),
+  funnels: projectsFromFiles('funnel', 'funnel-new', [
+    ['01-SalesLoop.jpg', 'Funnel project 01', 'مشروع مسار بيع 01'],
+    ['04-4tourisim.jpg', 'Funnel project 02', 'مشروع مسار بيع 02'],
+    ['05-EstePearl.jpg', 'Funnel project 03', 'مشروع مسار بيع 03'],
+    ['06-PropertySuperious.jpg', 'Funnel project 04', 'مشروع مسار بيع 04'],
+    ['07-WithFatima.jpg', 'Funnel project 05', 'مشروع مسار بيع 05'],
+    ['08-JihanFawaz.jpg', 'Funnel project 06', 'مشروع مسار بيع 06'],
+    ['09-Taj Clinics.jpg', 'Funnel project 07', 'مشروع مسار بيع 07'],
+    ['10-SMO.jpg', 'Funnel project 08', 'مشروع مسار بيع 08'],
+  ]),
+}
+
+export const workCategories: WorkCategory[] = existingWorkCategories.flatMap((category) => {
+  const updated: WorkCategory = {
+    ...category,
+    projects: [
+      ...category.projects.map((project) => ({ ...project, optimized: true })),
+      ...(extraProjects[category.id] ?? []),
+    ],
+    ...(category.id === 'branding' ? { collections: brandingCollections } : {}),
+  }
+  return category.id === 'branding' ? [updated, threeDCategory] : [updated]
+})
+
+function allProjects(category: WorkCategory): PortfolioProject[] {
+  return [...category.projects, ...(category.collections ?? []).flatMap(allProjects)]
+}
+
+// Encode each segment, preserving folder separators and exact filename case.
+const imageUrl = (src: string) => src.split('/').map(encodeURIComponent).join('/')
+
+// Collection query URLs use the existing /work/:categoryId route.
+// Example: /work/branding?collection=bags (no new nested router required).
+function collectionHref(categoryId: string, collectionId: string) {
+  return `/work/${categoryId}?collection=${encodeURIComponent(collectionId)}`
+}
+function readCollectionQuery() {
+  return typeof window === 'undefined'
+    ? null
+    : new URLSearchParams(window.location.search).get('collection')
+}
+
 /*
   Web-sized copies of every project image live in public/images/work/web
   (720 px and 1400 px wide WebP). The originals stay where they are and are
@@ -197,7 +338,7 @@ const webCopy = (src: string, width: 720 | 1400) =>
 /* One complete image per project, without cropping. */
 function PortfolioImage({ project }: { project: PortfolioProject }) {
   const { tr } = useLang()
-  const [source, setSource] = useState<'web' | 'original' | 'failed'>('web')
+  const [source, setSource] = useState<'web' | 'original' | 'failed'>(project.optimized ? 'web' : 'original')
   return (
     <div className="sw-frame group/frame relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl bg-white shadow-[0_26px_60px_-30px_rgba(5,23,70,0.5)] ring-1 ring-[#051746]/10">
       {source === 'failed' ? (
@@ -209,18 +350,18 @@ function PortfolioImage({ project }: { project: PortfolioProject }) {
         </p>
       ) : (
         <img
-          src={source === 'web' ? webCopy(project.image, 1400) : project.image}
+          src={imageUrl(source === 'web' ? webCopy(project.image, 1400) : project.image)}
           srcSet={
             source === 'web'
-              ? `${webCopy(project.image, 720)} 720w, ${webCopy(project.image, 1400)} 1400w`
+              ? `${imageUrl(webCopy(project.image, 720))} 720w, ${imageUrl(webCopy(project.image, 1400))} 1400w`
               : undefined
           }
           sizes="(min-width: 1280px) 30vw, (min-width: 768px) 46vw, 92vw"
-          alt={`${tr(project.name)} — ${tr(project.description)}`}
+          alt={[tr(project.name), tr(project.description)].filter(Boolean).join(' — ')}
           loading="lazy"
           decoding="async"
           onError={() => setSource((current) => (current === 'web' ? 'original' : 'failed'))}
-          className="h-full w-full object-contain transition-transform duration-700 ease-out motion-safe:group-hover/frame:scale-[1.04]"
+          className="h-full w-full object-contain"
         />
       )}
     </div>
@@ -232,156 +373,104 @@ function PortfolioImage({ project }: { project: PortfolioProject }) {
   in that discipline; the stack spreads when the tile is hovered or focused.
 */
 const studioStyles = `
-.sw {
-  --sw-navy: #051746;
-  --sw-signal: #f6620d;
-  background: #f3f5fa;
-  color: var(--sw-navy);
+.sw { --sw-navy:#051746; --sw-signal:#f6620d; background:#f3f5fa; color:var(--sw-navy); }
+.sw-grid-bg { position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(5,23,70,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(5,23,70,.035) 1px,transparent 1px); background-size:72px 72px; }
+.sw-glow, .sw-ghost, .sw-card-glow { display:none; }
+.sw-line { display:block; padding-block:.08em; }
+[dir='rtl'] .sw-line { padding-block:.15em; }
+.sw-line > span { display:block; }
+.sw-card { display:block; width:100%; text-align:start; border-radius:1.75rem; }
+.sw-card:focus-visible, .sw-project-open:focus-visible { outline:3px solid var(--sw-signal); outline-offset:5px; }
+.sw-card-in { display:flex; flex-direction:column; height:100%; min-height:24rem; overflow:hidden; border-radius:inherit; color:#fff; background:linear-gradient(160deg,#0a2466,#051746 65%,#030e2e); border:1px solid rgba(5,23,70,.12); }
+.sw-stack { position:relative; display:block; height:clamp(11.5rem,19vw,15rem); margin-top:1.5rem; }
+.sw-shot { position:absolute; left:50%; top:50%; display:block; width:min(56%,17rem); aspect-ratio:4 / 3; }
+.sw-shot-in { display:block; width:100%; height:100%; overflow:hidden; border-radius:.7rem; background:#fff; box-shadow:0 18px 40px -14px rgba(0,0,0,.6); transition:transform .75s cubic-bezier(.16,1,.3,1); }
+.sw-shot-in img { display:block; width:100%; height:100%; object-fit:cover; }
+.sw-shot-l .sw-shot-in { transform:translate(-84%,-50%) rotate(-10deg); }
+.sw-shot-r .sw-shot-in { transform:translate(-16%,-46%) rotate(8deg); }
+.sw-shot-c .sw-shot-in { transform:translate(-50%,-42%) rotate(-2deg); }
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .sw-card:hover .sw-shot-l .sw-shot-in { transform:translate(-106%,-56%) rotate(-15deg); }
+  .sw-card:hover .sw-shot-r .sw-shot-in { transform:translate(6%,-52%) rotate(13deg); }
+  .sw-card:hover .sw-shot-c .sw-shot-in { transform:translate(-50%,-50%) rotate(0deg) scale(1.07); }
 }
-.sw-grid-bg {
-  position: absolute; inset: 0; pointer-events: none;
-  background-image:
-    linear-gradient(rgba(5,23,70,.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(5,23,70,.06) 1px, transparent 1px);
-  background-size: 72px 72px;
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 72% 0%, #000 0%, transparent 72%);
-  mask-image: radial-gradient(ellipse 90% 70% at 72% 0%, #000 0%, transparent 72%);
+@media (prefers-reduced-motion:no-preference) {
+  .sw-card:focus-visible .sw-shot-l .sw-shot-in { transform:translate(-106%,-56%) rotate(-15deg); }
+  .sw-card:focus-visible .sw-shot-r .sw-shot-in { transform:translate(6%,-52%) rotate(13deg); }
+  .sw-card:focus-visible .sw-shot-c .sw-shot-in { transform:translate(-50%,-50%) rotate(0deg) scale(1.07); }
+  .sw-stack[data-revealed='false'] .sw-shot { opacity:0; }
+  .sw-stack[data-revealed='true'] .sw-shot { animation:sw-deal .8s cubic-bezier(.16,1,.3,1) both; }
 }
-.sw-glow {
-  position: absolute; left: 0; top: 0;
-  width: 46vmax; height: 46vmax; margin: -23vmax 0 0 -23vmax;
-  border-radius: 50%; pointer-events: none; will-change: transform;
-  background: radial-gradient(circle, rgba(246,98,13,.22), rgba(246,98,13,0) 62%);
-}
-.sw-ghost {
-  position: absolute; left: 0; top: clamp(2.5rem, 7vw, 6rem);
-  white-space: nowrap; pointer-events: none; user-select: none; will-change: transform;
-  font-weight: 800; line-height: 1; letter-spacing: -.04em; text-transform: uppercase;
-  font-size: clamp(6rem, 17vw, 17rem);
-  color: transparent; -webkit-text-stroke: 1px rgba(5,23,70,.1);
-}
-.sw-ghost b { font-weight: inherit; -webkit-text-stroke-color: rgba(246,98,13,.38); }
-[dir='rtl'] .sw-ghost { letter-spacing: 0; line-height: 1.5; font-size: clamp(5rem, 13vw, 13rem); }
-.sw-line { display: block; overflow: hidden; padding-block: .08em; margin-block: -.08em; }
-[dir='rtl'] .sw-line { padding-block: .2em; margin-block: -.2em; }
-.sw-line > span { display: block; will-change: transform; }
-.sw-card {
-  --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 100%;
-  position: relative; display: block; width: 100%;
-  text-align: start; border-radius: 1.75rem; perspective: 1100px;
-}
-.sw-card:focus-visible { outline: 2px solid var(--sw-signal); outline-offset: 6px; }
-.sw-card-in {
-  position: relative; display: flex; flex-direction: column;
-  height: 100%; min-height: 24rem; overflow: hidden; border-radius: inherit;
-  color: #fff;
-  background: linear-gradient(160deg, #0a2466 0%, #051746 55%, #030e2e 100%);
-  box-shadow: 0 30px 60px -34px rgba(5,23,70,.6);
-  transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform .6s cubic-bezier(.16,1,.3,1), box-shadow .6s cubic-bezier(.16,1,.3,1);
-}
-.sw-card:hover .sw-card-in, .sw-card:focus-visible .sw-card-in { box-shadow: 0 46px 80px -30px rgba(5,23,70,.75); }
-.sw-card-glow {
-  position: absolute; inset: 0; opacity: 0; transition: opacity .5s;
-  background: radial-gradient(440px circle at var(--mx) var(--my), rgba(246,98,13,.34), transparent 60%);
-}
-.sw-card:hover .sw-card-glow, .sw-card:focus-visible .sw-card-glow { opacity: 1; }
-.sw-stack { position: relative; display: block; height: clamp(11.5rem, 19vw, 15rem); margin-top: 1.5rem; }
-.sw-shot { position: absolute; left: 50%; top: 50%; display: block; width: min(56%, 17rem); aspect-ratio: 4 / 3; }
-.sw-shot-in {
-  display: block; width: 100%; height: 100%; overflow: hidden;
-  border-radius: .7rem; background: #fff;
-  box-shadow: 0 18px 40px -14px rgba(0,0,0,.6);
-  transition: transform .75s cubic-bezier(.16,1,.3,1);
-}
-.sw-shot-in img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.sw-shot-l .sw-shot-in { transform: translate(-84%, -50%) rotate(-10deg); }
-.sw-shot-r .sw-shot-in { transform: translate(-16%, -46%) rotate(8deg); }
-.sw-shot-c .sw-shot-in { transform: translate(-50%, -42%) rotate(-2deg); }
-.sw-card:hover .sw-shot-l .sw-shot-in, .sw-card:focus-visible .sw-shot-l .sw-shot-in { transform: translate(-106%, -56%) rotate(-15deg); }
-.sw-card:hover .sw-shot-r .sw-shot-in, .sw-card:focus-visible .sw-shot-r .sw-shot-in { transform: translate(6%, -52%) rotate(13deg); }
-.sw-card:hover .sw-shot-c .sw-shot-in, .sw-card:focus-visible .sw-shot-c .sw-shot-in { transform: translate(-50%, -50%) rotate(0deg) scale(1.07); }
-.sw-card-body { position: relative; display: flex; flex-direction: column; flex: 1; padding: 1.5rem 1.75rem 1.6rem; }
-.sw-card-title { display: block; margin: .6rem 0 1.4rem; font-weight: 700; line-height: 1.05; letter-spacing: -.03em; font-size: clamp(1.75rem, 2.4vw, 2.4rem); }
-[dir='rtl'] .sw-card-title { letter-spacing: 0; line-height: 1.4; }
-.sw-card-foot {
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  margin-top: auto; padding-top: 1.1rem; border-top: 1px solid rgba(255,255,255,.16);
-  font-size: 1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-  transition: border-color .5s;
-}
-[dir='rtl'] .sw-card-foot { letter-spacing: 0; font-size: 1.05rem; }
-.sw-card:hover .sw-card-foot, .sw-card:focus-visible .sw-card-foot { border-top-color: var(--sw-signal); }
-.sw-card-arrow {
-  display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.3); font-size: 1.3rem;
-  transition: background-color .5s, border-color .5s, transform .5s cubic-bezier(.16,1,.3,1);
-}
-.sw-card:hover .sw-card-arrow, .sw-card:focus-visible .sw-card-arrow { background: var(--sw-signal); border-color: var(--sw-signal); transform: scale(1.08); }
-@media (prefers-reduced-motion: reduce) {
-  .sw-card-in, .sw-shot-in { transition: none; transform: none; }
-  .sw-shot-l .sw-shot-in { transform: translate(-84%, -50%) rotate(-10deg); }
-  .sw-shot-r .sw-shot-in { transform: translate(-16%, -46%) rotate(8deg); }
-  .sw-shot-c .sw-shot-in { transform: translate(-50%, -42%) rotate(-2deg); }
-}
+@keyframes sw-deal { from { opacity:0; transform:translateY(45px) scale(.82); } to { opacity:1; transform:translateY(0) scale(1); } }
+@media (prefers-reduced-motion:reduce) { .sw-shot-in { transition:none; } }
+.sw-card-body { display:flex; flex-direction:column; flex:1; padding:1.25rem 1.5rem; }
+.sw-card-title { display:block; margin:.6rem 0 1.25rem; font-weight:700; line-height:1.15; letter-spacing:-.03em; font-size:clamp(1.65rem,2.4vw,2.3rem); }
+[dir='rtl'] .sw-card-title { letter-spacing:0; line-height:1.4; }
+.sw-card-foot { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:auto; padding-top:1rem; border-top:1px solid rgba(255,255,255,.16); font-size:1rem; font-weight:700; }
+.sw-card-arrow { display:grid; place-items:center; width:2.8rem; height:2.8rem; border-radius:50%; border:1px solid rgba(255,255,255,.3); font-size:1.3rem; }
+@media (hover:hover) { .sw-card:hover .sw-card-arrow { background:var(--sw-signal); border-color:var(--sw-signal); } .sw-project-open:hover .sw-open-label { text-decoration:underline; } }
+.sw-project-open { display:block; width:100%; border:0; padding:0; background:transparent; color:inherit; text-align:start; cursor:pointer; border-radius:1rem; }
+.sw-project { content-visibility:auto; contain-intrinsic-size:auto 420px; }
+.sw-frame { box-shadow:none!important; }
+.sw-viewer { width:calc(100% - 24px); max-width:1200px; max-height:92vh; max-height:92dvh; margin:auto; padding:0; border:0; border-radius:16px; background:#fff; color:#051746; box-shadow:0 20px 70px rgba(0,0,0,.35); }
+.sw-viewer::backdrop { background:rgba(1,9,30,.87); }
+.sw-viewer-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:16px 20px; border-bottom:1px solid #e3e7ee; }
+.sw-viewer-title { margin:0; font-size:clamp(1rem,2vw,1.4rem); font-weight:700; }
+.sw-viewer-controls { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.sw-viewer-control { min-height:44px; min-width:44px; padding:8px 12px; border:1px solid #c9d0dc; border-radius:8px; background:#fff; color:#051746; cursor:pointer; font-weight:600; }
+.sw-viewer-control:hover { background:#f3f5fa; }
+.sw-viewer-control:focus-visible { outline:3px solid #f6620d; outline-offset:2px; }
+.sw-viewer-body { overflow:auto; overscroll-behavior:contain; max-height:75vh; max-height:75dvh; padding:12px; background:#f3f5fa; }
+.sw-viewer-image { display:block; width:100%; height:auto; max-height:70vh; max-height:70dvh; object-fit:contain; margin:auto; }
+.sw-viewer-image[data-expanded='true'] { max-height:none; }
+.sw-viewer-message { padding:24px; text-align:center; }
 `
+
 function CategoryCard({
   category,
   index,
   count,
   setRef,
   className,
+  href,
+  onNavigate,
 }: {
   category: WorkCategory
   index: number
   count: string
   setRef: (element: HTMLAnchorElement | null) => void
   className: string
+  href?: string
+  onNavigate?: (event: ReactMouseEvent<HTMLAnchorElement>) => void
 }) {
   const { tr, rtl } = useLang()
-  const shots = category.projects.slice(0, 3)
-  const fan = shots.length === 2 ? ['sw-shot-l', 'sw-shot-c'] : ['sw-shot-l', 'sw-shot-r', 'sw-shot-c']
-  // Mouse only: the tile leans toward the cursor and its glow follows it.
-  const lean = (event: ReactPointerEvent<HTMLAnchorElement>) => {
-    if (event.pointerType !== 'mouse') return
-    const tile = event.currentTarget
-    const box = tile.getBoundingClientRect()
-    const px = (event.clientX - box.left) / box.width - 0.5
-    const py = (event.clientY - box.top) / box.height - 0.5
-    tile.style.setProperty('--ry', `${(px * 7).toFixed(2)}deg`)
-    tile.style.setProperty('--rx', `${(-py * 7).toFixed(2)}deg`)
-    tile.style.setProperty('--mx', `${((px + 0.5) * 100).toFixed(1)}%`)
-    tile.style.setProperty('--my', `${((py + 0.5) * 100).toFixed(1)}%`)
-  }
-  const settle = (event: ReactPointerEvent<HTMLAnchorElement>) => {
-    event.currentTarget.style.setProperty('--ry', '0deg')
-    event.currentTarget.style.setProperty('--rx', '0deg')
-  }
+  const shots = allProjects(category).slice(0, 3)
+  const fan = shots.length === 1 ? ['sw-shot-c'] : shots.length === 2 ? ['sw-shot-l', 'sw-shot-c'] : ['sw-shot-l', 'sw-shot-r', 'sw-shot-c']
+  const stackReveal = useRevealOnScroll<HTMLSpanElement>()
   return (
     <a
       ref={setRef}
-      href={`/work/${category.id}`}
-      onPointerMove={lean}
-      onPointerLeave={settle}
+      href={href ?? `/work/${category.id}`}
+      onClick={onNavigate}
       aria-label={`${tr(category.title)} — ${count}`}
       className={`sw-card ${className}`}
     >
       <span className="sw-card-in">
         <span className="sw-card-glow" aria-hidden="true" />
-        <span className="sw-stack" aria-hidden="true">
-          {shots.map((project, i) => (
-            <span key={project.id} className={`sw-shot ${fan[i]}`}>
+        <span ref={stackReveal.ref} className="sw-stack" data-revealed={stackReveal.visible} aria-hidden="true">
+          {shots.map((project, shotIndex) => (
+            <span key={project.id} className={`sw-shot ${fan[shotIndex]}`} style={{ animationDelay: `${shotIndex * 80}ms` }}>
               <span className="sw-shot-in">
                 <img
-                  src={webCopy(project.image, 720)}
+                  src={imageUrl(project.optimized ? webCopy(project.image, 720) : project.image)}
                   alt=""
                   loading="lazy"
                   decoding="async"
                   onError={(event) => {
                     const image = event.currentTarget
-                    if (image.dataset.fallback) return
+                    if (!project.optimized || image.dataset.fallback) { image.style.visibility = 'hidden'; return }
                     image.dataset.fallback = '1'
-                    image.src = project.image
+                    image.src = imageUrl(project.image)
                   }}
                 />
               </span>
@@ -406,6 +495,91 @@ function CategoryCard({
     </a>
   )
 }
+function ProjectViewer({
+  projects, initialIndex, onClose,
+}: {
+  projects: PortfolioProject[]
+  initialIndex: number
+  onClose: () => void
+}) {
+  const { tr, rtl } = useLang()
+  const [index, setIndex] = useState(initialIndex)
+  const [expanded, setExpanded] = useState(false)
+  const [status, setStatus] = useState<'loading' | 'loaded' | 'failed'>('loading')
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
+  const project = projects[index]
+  const move = (direction: number) => {
+    setIndex((current) => (current + direction + projects.length) % projects.length)
+    setStatus('loading')
+    setExpanded(false)
+    if (bodyRef.current) bodyRef.current.scrollTop = 0
+  }
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const oldOverflow = document.body.style.overflow
+    const oldPadding = document.body.style.paddingRight
+    const scrollbar = window.innerWidth - document.documentElement.clientWidth
+    document.body.style.overflow = 'hidden'
+    if (scrollbar > 0) document.body.style.paddingRight = `${parseFloat(getComputedStyle(document.body).paddingRight || '0') + scrollbar}px`
+    dialog.showModal()
+    return () => {
+      dialog.close()
+      document.body.style.overflow = oldOverflow
+      document.body.style.paddingRight = oldPadding
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
+    }
+  }, [])
+  if (!project || typeof document === 'undefined') return null
+  return createPortal(
+    <dialog
+      ref={dialogRef}
+      className="sw-viewer"
+      aria-labelledby="sw-viewer-title"
+      dir={rtl ? 'rtl' : 'ltr'}
+      data-lenis-prevent
+      onCancel={(event) => { event.preventDefault(); onClose() }}
+      onClick={(event) => { if (event.target === event.currentTarget) onClose() }}
+      onKeyDown={(event) => {
+        if (projects.length < 2) return
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+          event.preventDefault()
+          move((event.key === 'ArrowRight' ? 1 : -1) * (rtl ? -1 : 1))
+        }
+      }}
+    >
+      <div>
+        <header className="sw-viewer-head">
+          <div>
+            <h2 id="sw-viewer-title" className="sw-viewer-title">{tr(project.name)}</h2>
+            {tr(project.description) && <p>{tr(project.description)}</p>}
+          </div>
+          <div className="sw-viewer-controls">
+            {projects.length > 1 && <>
+              <button type="button" className="sw-viewer-control" onClick={() => move(-1)} aria-label={tr({ en: 'Previous project', ar: 'المشروع السابق' })}>{rtl ? '→' : '←'}</button>
+              <span aria-live="polite">{index + 1} / {projects.length}</span>
+              <button type="button" className="sw-viewer-control" onClick={() => move(1)} aria-label={tr({ en: 'Next project', ar: 'المشروع التالي' })}>{rtl ? '←' : '→'}</button>
+            </>}
+            <button type="button" className="sw-viewer-control" aria-pressed={expanded} onClick={() => setExpanded((value) => !value)}>
+              {expanded ? tr({ en: 'Fit image', ar: 'ملاءمة الصورة' }) : tr({ en: 'Expand image', ar: 'تكبير الصورة' })}
+            </button>
+            <button type="button" autoFocus className="sw-viewer-control" onClick={onClose} aria-label={tr({ en: 'Close project', ar: 'إغلاق المشروع' })}>✕</button>
+          </div>
+        </header>
+        <div ref={bodyRef} className="sw-viewer-body" data-lenis-prevent>
+          {status === 'loading' && <p role="status" className="sw-viewer-message">{tr({ en: 'Loading project…', ar: 'جارٍ تحميل المشروع…' })}</p>}
+          {status === 'failed' ? <p role="alert" className="sw-viewer-message">{tr({ en: 'Project image unavailable. Check the image file path.', ar: 'صورة المشروع غير متوفرة. تحقق من مسار الصورة.' })}</p> :
+            <img key={project.image} src={imageUrl(project.image)} alt={tr(project.name)} decoding="async"
+              className="sw-viewer-image" data-expanded={expanded}
+              onLoad={() => setStatus('loaded')} onError={() => setStatus('failed')} />}
+        </div>
+      </div>
+    </dialog>, document.body,
+  )
+}
+
 /*
  * Credibility / company track record.
  * Reveals when scrolled into view, with eased counters and staggered cards.
@@ -607,17 +781,29 @@ export function Credibility() {
     </section>
   )
 }
-export function Work({ categoryId }: { categoryId?: string } = {}) {
+export function Work({ categoryId, collectionId }: { categoryId?: string; collectionId?: string } = {}) {
   const { tr, rtl } = useLang()
-  const activeId = categoryId ?? null
+  const activeId = categoryId?.toLowerCase() ?? null
+  const [queryCollection, setQueryCollection] = useState(readCollectionQuery)
+  useEffect(() => {
+    const sync = () => setQueryCollection(readCollectionQuery())
+    sync()
+    window.addEventListener('popstate', sync)
+    return () => window.removeEventListener('popstate', sync)
+  }, [categoryId])
+  const selectedCollectionId = collectionId ?? queryCollection
   const sectionRef = useRef<HTMLElement>(null)
   const categoryHeadingRef = useRef<HTMLHeadingElement>(null)
   const categoryButtons = useRef<Record<string, HTMLAnchorElement | null>>({})
   const activeCategory = workCategories.find((category) => category.id === activeId)
-  const totalProjects = workCategories.reduce((sum, category) => sum + category.projects.length, 0)
+  const activeCollection = activeCategory?.collections?.find((collection) => collection.id === selectedCollectionId)
+  const invalidCollection = Boolean(activeCategory?.collections && selectedCollectionId && !activeCollection)
+  const visibleProjects = activeCollection?.projects ?? activeCategory?.projects ?? []
+  const viewTitle = activeCollection?.title ?? activeCategory?.title
+  const totalProjects = workCategories.reduce((sum, category) => sum + allProjects(category).length, 0)
   const projectCount = (count: number) =>
     tr({
-      en: `${count} projects`,
+      en: `${count} ${count === 1 ? 'project' : 'projects'}`,
       ar:
         count === 1
           ? 'مشروع واحد'
@@ -627,121 +813,24 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
               ? `${count} مشاريع`
               : `${count} مشروعًا`,
     })
-  // Ambient motion: the glow drifts toward the cursor, the outlined words slide
-  // with the scroll, and the headline rises out of its mask once.
-  // Built once: a language switch only swaps text here. The direction-dependent values are read
-  // through `rtlRef`, and the refresh that follows a switch re-reads them (invalidateOnRefresh).
-  const rtlRef = useRef(rtl)
-  rtlRef.current = rtl
-  useGsap(
-    sectionRef,
-    () => {
-      const section = sectionRef.current
-      if (!section || prefersReduced()) return
-      gsap.from('.sw-line > span', {
-        yPercent: 115,
-        duration: 1.2,
-        ease: 'expo.out',
-        stagger: 0.1,
-        scrollTrigger: { trigger: section, start: 'top 72%', once: true },
-      })
-      gsap.from('.sw-intro', {
-        opacity: 0,
-        y: 24,
-        duration: 1,
-        ease: 'power3.out',
-        stagger: 0.08,
-        scrollTrigger: { trigger: section, start: 'top 66%', once: true },
-      })
-      gsap.fromTo(
-        '.sw-ghost',
-        { xPercent: () => (rtlRef.current ? -22 : 4) },
-        {
-          xPercent: () => (rtlRef.current ? 4 : -22),
-          ease: 'none',
-          scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 0.8, invalidateOnRefresh: true },
-        },
-      )
-      const glow = section.querySelector<HTMLElement>('.sw-glow')
-      if (!glow) return
-      gsap.set(glow, { x: section.offsetWidth * (rtlRef.current ? 0.18 : 0.82), y: 160 })
-      if (!window.matchMedia('(hover: hover)').matches) return
-      const moveX = gsap.quickTo(glow, 'x', { duration: 1.4, ease: 'power3.out' })
-      const moveY = gsap.quickTo(glow, 'y', { duration: 1.4, ease: 'power3.out' })
-      const follow = (event: PointerEvent) => {
-        const box = section.getBoundingClientRect()
-        moveX(event.clientX - box.left)
-        moveY(event.clientY - box.top)
-      }
-      section.addEventListener('pointermove', follow)
-      return () => section.removeEventListener('pointermove', follow)
-    },
-    [],
-  )
-  // Touch screens: the resting glow moves to the reading side when the direction changes.
-  const firstDir = useRef(true)
-  useLayoutEffect(() => {
-    if (firstDir.current) {
-      firstDir.current = false
-      return
-    }
-    const section = sectionRef.current
-    const glow = section?.querySelector<HTMLElement>('.sw-glow')
-    if (!section || !glow || prefersReduced() || window.matchMedia('(hover: hover)').matches) return
-    gsap.set(glow, { x: section.offsetWidth * (rtl ? 0.18 : 0.82) })
-  }, [rtl])
-  // The tiles (or the opened discipline's projects) arrive each time the view changes.
-  useGsap(
-    sectionRef,
-    () => {
-      if (prefersReduced()) return
-      if (activeId) {
-        gsap.from('.sw-detail-head > *', { opacity: 0, y: 26, duration: 0.8, ease: 'power3.out', stagger: 0.07 })
-        gsap.from('.sw-project', {
-          opacity: 0,
-          y: 60,
-          duration: 1,
-          ease: 'expo.out',
-          stagger: 0.1,
-          delay: 0.1,
-        })
-        gsap.from('.sw-project .sw-frame', {
-          clipPath: 'inset(100% 0% 0% 0%)',
-          duration: 1.2,
-          ease: 'expo.inOut',
-          stagger: 0.1,
-          clearProps: 'clipPath',
-        })
-        return
-      }
-      const tiles = gsap.utils.toArray<HTMLElement>('.sw-card')
-      const trigger = { trigger: '.sw-tiles', start: 'top 82%', once: true }
-      gsap.from(tiles, {
-        opacity: 0,
-        y: 90,
-        duration: 1.1,
-        ease: 'expo.out',
-        stagger: 0.09,
-        scrollTrigger: trigger,
-        clearProps: 'transform',
-      })
-      // Each stack starts as one pile and deals itself out into the fan.
-      tiles.forEach((tile, index) => {
-        gsap.from(tile.querySelectorAll('.sw-shot'), {
-          opacity: 0,
-          yPercent: 70,
-          scale: 0.7,
-          rotate: () => gsap.utils.random(-18, 18),
-          duration: 1.1,
-          ease: 'back.out(1.5)',
-          stagger: 0.08,
-          delay: 0.25 + index * 0.09,
-          scrollTrigger: trigger,
-        })
-      })
-    },
-    [activeId],
-  )
+  const [openProject, setOpenProject] = useState<number | null>(null)
+  useEffect(() => { setOpenProject(null) }, [activeId, selectedCollectionId])
+
+  // Keep subcollections on the same route: instant navigation, with browser Back support.
+  const navigateCollection = (event: ReactMouseEvent<HTMLAnchorElement>, id: string | null) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || collectionId !== undefined) return
+    event.preventDefault()
+    const url = new URL(window.location.href)
+    if (id) url.searchParams.set('collection', id)
+    else url.searchParams.delete('collection')
+    window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`)
+    setOpenProject(null)
+    setQueryCollection(id)
+    requestAnimationFrame(() => {
+      categoryHeadingRef.current?.focus({ preventScroll: true })
+      sectionRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' })
+    })
+  }
   const ghostWords = workCategories.map((category) => tr(category.title))
   return (
     <>
@@ -787,8 +876,8 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
               </h2>
               <p className="sw-intro mt-6 text-[1.125rem] font-semibold leading-relaxed text-[#051746]/90 sm:text-xl">
                 {tr({
-                  en: 'Curated work across five disciplines.',
-                  ar: 'أعمال منتقاة عبر خمسة تخصصات.',
+                  en: `Curated work across ${workCategories.length} disciplines.`,
+                  ar: `أعمال منتقاة عبر ${workCategories.length} تخصصات.`,
                 })}
               </p>
             </div>
@@ -811,33 +900,32 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
               </div>
             </dl>
           </header>}
-          {!activeCategory ? (
+          {!activeId ? (
             <div className="sw-tiles grid gap-5 md:grid-cols-2 lg:grid-cols-6">
               {workCategories.map((category, index) => (
                 <CategoryCard
                   key={category.id}
                   category={category}
                   index={index}
-                  count={projectCount(category.projects.length)}
+                  count={projectCount(allProjects(category).length)}
                   setRef={(element) => {
                     categoryButtons.current[category.id] = element
                   }}
-                  // Three tiles on the first row, two wider ones on the second.
-                  className={
-                    index < 3
-                      ? 'lg:col-span-2'
-                      : index === workCategories.length - 1
-                        ? 'md:col-span-2 lg:col-span-3'
-                        : 'lg:col-span-3'
-                  }
+                  className="lg:col-span-2"
                 />
               ))}
             </div>
+          ) : !activeCategory ? (
+            <div className="relative py-20">
+              <h1 id="category-title" className="text-3xl font-bold">{tr({ en: 'Collection not found', ar: 'المجموعة غير موجودة' })}</h1>
+              <a href="/#selected-work" className="mt-6 inline-block font-bold text-signal">{tr({ en: 'Back to all work', ar: 'العودة إلى جميع الأعمال' })}</a>
+            </div>
           ) : (
-            <div key={activeCategory.id}>
+            <div key={`${activeCategory.id}-${selectedCollectionId ?? 'all'}`}>
               <div className="sw-detail-head">
                 <a
-                  href="/#selected-work"
+                  href={activeCollection || invalidCollection ? `/work/${activeCategory.id}` : '/#selected-work'}
+                  onClick={activeCollection || invalidCollection ? (event) => navigateCollection(event, null) : undefined}
                   className="group/back mb-8 inline-flex items-center gap-3 rounded-full border border-[#051746]/20 min-h-[3.75rem] py-3.5 ps-4 pe-6 text-base font-bold sm:text-lg text-[#051746] transition-colors hover:border-signal hover:bg-signal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal"
                 >
                   <span
@@ -846,7 +934,9 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
                   >
                     {rtl ? '→' : '←'}
                   </span>
-                  {tr({ en: 'Back to home', ar: 'العودة إلى الصفحة الرئيسية' })}
+                  {activeCollection || invalidCollection
+                    ? tr({ en: 'Back to Branding', ar: 'العودة إلى الهوية البصرية' })
+                    : tr({ en: 'Back to all work', ar: 'العودة إلى جميع الأعمال' })}
                 </a>
                 <div className="mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-[#051746]/15 pb-6">
                   <h1
@@ -856,36 +946,64 @@ export function Work({ categoryId }: { categoryId?: string } = {}) {
                     style={{ outline: 'none' }}
                     className="text-[clamp(2rem,4.5vw,3.25rem)] font-bold tracking-tight rtl:tracking-normal"
                   >
-                    {tr(activeCategory.title)}
+                    {invalidCollection ? tr({ en: 'Collection not found', ar: 'المجموعة غير موجودة' }) : tr(viewTitle ?? activeCategory.title)}
                     <span className="text-signal">.</span>
                   </h1>
-                  <p className="text-base font-semibold text-[#051746]/85 sm:text-lg">{projectCount(activeCategory.projects.length)}</p>
+                  <p className="text-base font-semibold text-[#051746]/85 sm:text-lg">{projectCount(invalidCollection ? 0 : activeCollection ? visibleProjects.length : allProjects(activeCategory).length)}</p>
                 </div>
               </div>
-              <div
+              {activeCategory.collections && !activeCollection && !invalidCollection && (
+                <div className="mb-14">
+                  <h2 className="mb-6 text-2xl font-bold">{tr({ en: 'Explore collections', ar: 'استكشف المجموعات' })}</h2>
+                  <div className="sw-tiles grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    {activeCategory.collections.map((collection, index) => (
+                      <CategoryCard
+                        key={collection.id}
+                        category={collection}
+                        index={index}
+                        count={projectCount(collection.projects.length)}
+                        href={collectionHref(activeCategory.id, collection.id)}
+                        onNavigate={(event) => navigateCollection(event, collection.id)}
+                        setRef={() => {}}
+                        className=""
+                      />
+                    ))}
+                  </div>
+                  <h2 className="mt-14 text-2xl font-bold">{tr({ en: 'Brand identity projects', ar: 'مشاريع الهوية البصرية' })}</h2>
+                </div>
+              )}
+              {!invalidCollection && <div
                 className={`grid items-start gap-x-6 gap-y-12 md:grid-cols-2 ${
-                  activeCategory.projects.length > 2 ? 'xl:grid-cols-3' : ''
+                  visibleProjects.length > 2 ? 'xl:grid-cols-3' : ''
                 }`}
               >
-                {activeCategory.projects.map((project, index) => (
+                {visibleProjects.map((project, index) => (
                   <article key={project.id} className="sw-project min-w-0">
-                    <PortfolioImage project={project} />
+                    <button type="button" className="sw-project-open" onClick={() => setOpenProject(index)}
+                      aria-haspopup="dialog" aria-label={`${tr({ en: 'Open project', ar: 'افتح المشروع' })}: ${tr(project.name)}`}>
+                      <PortfolioImage key={project.image} project={project} />
+                      <span className="sw-open-label mt-3 block text-sm font-bold text-signal">{tr({ en: 'View project', ar: 'عرض المشروع' })} {rtl ? '←' : '→'}</span>
+                    </button>
                     <div className="flex gap-4 px-1 pt-5">
                       <span className="latin pt-1.5 text-sm font-bold text-signal tabular-nums">
                         {String(index + 1).padStart(2, '0')}
                       </span>
                       <div>
-                        <h4 className="text-xl font-bold leading-snug sm:text-2xl">{tr(project.name)}</h4>
-                        <p className="mt-1.5 text-base font-semibold leading-relaxed text-[#051746]/85 sm:text-lg">{tr(project.description)}</p>
+                        <h3 className="text-xl font-bold leading-snug sm:text-2xl"><button type="button" className="text-start hover:text-signal focus-visible:outline focus-visible:outline-2 focus-visible:outline-signal" onClick={() => setOpenProject(index)} aria-haspopup="dialog">{tr(project.name)}</button></h3>
+                        {tr(project.description) && <p className="mt-1.5 text-base font-semibold leading-relaxed text-[#051746]/85 sm:text-lg">{tr(project.description)}</p>}
                       </div>
                     </div>
                   </article>
                 ))}
-              </div>
+              </div>}
             </div>
           )}
         </div>
       </section>
+      {openProject !== null && visibleProjects[openProject] && <ProjectViewer
+        key={`${activeId}-${selectedCollectionId ?? 'all'}`}
+        projects={visibleProjects} initialIndex={openProject} onClose={() => setOpenProject(null)}
+      />}
       {!activeId && <Credibility />}
     </>
   )
