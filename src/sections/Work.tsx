@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { getLenis } from '../lib/gsap'
 import { useLang } from '../lib/i18n'
-import type { MouseEvent as ReactMouseEvent } from 'react'
+import { jumpTo } from '../lib/scroll'
 type Localized = {
   en: string
   ar: string
@@ -200,7 +201,7 @@ function projectsFromFiles(
     name: { en, ar },
     description: { en: '', ar: '' },
     image: `/images/work/${folder}/${filename}`,
-    optimized: false,
+    optimized: true,
   }))
 }
 
@@ -316,20 +317,17 @@ function allProjects(category: WorkCategory): PortfolioProject[] {
 const imageUrl = (src: string) => src.split('/').map(encodeURIComponent).join('/')
 
 // Collection query URLs use the existing /work/:categoryId route.
-// Example: /work/branding?collection=bags (no new nested router required).
+// Example: /work/branding?collection=bags. App's router reads the query and passes `collectionId`,
+// so a subcollection opens through the same navigation (and scroll reset) as any other page.
 function collectionHref(categoryId: string, collectionId: string) {
   return `/work/${categoryId}?collection=${encodeURIComponent(collectionId)}`
-}
-function readCollectionQuery() {
-  return typeof window === 'undefined'
-    ? null
-    : new URLSearchParams(window.location.search).get('collection')
 }
 
 /*
   Web-sized copies of every project image live in public/images/work/web
-  (720 px and 1400 px wide WebP). The originals stay where they are and are
-  used as a fallback if a web copy is missing.
+  (720 px and 1400 px wide WebP, made by scripts/work-web-images.py). Cards and the
+  grid use them; the project viewer shows the original. If a web copy is missing the
+  original is used instead.
 */
 const webCopy = (src: string, width: 720 | 1400) =>
   src
@@ -386,6 +384,7 @@ const studioStyles = `
 .sw-shot { position:absolute; left:50%; top:50%; display:block; width:min(56%,17rem); aspect-ratio:4 / 3; }
 .sw-shot-in { display:block; width:100%; height:100%; overflow:hidden; border-radius:.7rem; background:#fff; box-shadow:0 18px 40px -14px rgba(0,0,0,.6); transition:transform .75s cubic-bezier(.16,1,.3,1); }
 .sw-shot-in img { display:block; width:100%; height:100%; object-fit:cover; }
+@media (hover:hover) { .sw-shot-in { will-change:transform; backface-visibility:hidden; } }
 .sw-shot-l .sw-shot-in { transform:translate(-84%,-50%) rotate(-10deg); }
 .sw-shot-r .sw-shot-in { transform:translate(-16%,-46%) rotate(8deg); }
 .sw-shot-c .sw-shot-in { transform:translate(-50%,-42%) rotate(-2deg); }
@@ -433,7 +432,6 @@ function CategoryCard({
   setRef,
   className,
   href,
-  onNavigate,
 }: {
   category: WorkCategory
   index: number
@@ -441,7 +439,6 @@ function CategoryCard({
   setRef: (element: HTMLAnchorElement | null) => void
   className: string
   href?: string
-  onNavigate?: (event: ReactMouseEvent<HTMLAnchorElement>) => void
 }) {
   const { tr, rtl } = useLang()
   const shots = allProjects(category).slice(0, 3)
@@ -451,7 +448,6 @@ function CategoryCard({
     <a
       ref={setRef}
       href={href ?? `/work/${category.id}`}
-      onClick={onNavigate}
       aria-label={`${tr(category.title)} — ${count}`}
       className={`sw-card ${className}`}
     >
@@ -513,22 +509,35 @@ function ProjectViewer({
     setIndex((current) => (current + direction + projects.length) % projects.length)
     setStatus('loading')
     setExpanded(false)
-    if (bodyRef.current) bodyRef.current.scrollTop = 0
   }
+  // Every project starts at the top of the viewer: on opening and after next/previous.
+  useLayoutEffect(() => {
+    if (bodyRef.current) bodyRef.current.scrollTop = 0
+    if (dialogRef.current) dialogRef.current.scrollTop = 0
+  }, [index])
   useEffect(() => {
     const dialog = dialogRef.current
     if (!dialog) return
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
-    const oldOverflow = document.body.style.overflow
-    const oldPadding = document.body.style.paddingRight
-    const scrollbar = window.innerWidth - document.documentElement.clientWidth
+    const root = document.documentElement
+    const savedY = window.scrollY
+    const old = { html: root.style.overflow, body: document.body.style.overflow, padding: document.body.style.paddingRight }
+    const scrollbar = window.innerWidth - root.clientWidth
+    // The page scrolls on <html> (and through Lenis on desktop): lock both, not just <body>.
+    const lenis = getLenis()
+    lenis?.stop()
+    root.style.overflow = 'hidden'
     document.body.style.overflow = 'hidden'
     if (scrollbar > 0) document.body.style.paddingRight = `${parseFloat(getComputedStyle(document.body).paddingRight || '0') + scrollbar}px`
     dialog.showModal()
     return () => {
       dialog.close()
-      document.body.style.overflow = oldOverflow
-      document.body.style.paddingRight = oldPadding
+      root.style.overflow = old.html
+      document.body.style.overflow = old.body
+      document.body.style.paddingRight = old.padding
+      lenis?.start()
+      // Return the gallery to exactly where it was.
+      if (Math.abs(window.scrollY - savedY) > 1) jumpTo(savedY)
       if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
     }
   }, [])
@@ -784,15 +793,7 @@ export function Credibility() {
 export function Work({ categoryId, collectionId }: { categoryId?: string; collectionId?: string } = {}) {
   const { tr, rtl } = useLang()
   const activeId = categoryId?.toLowerCase() ?? null
-  const [queryCollection, setQueryCollection] = useState(readCollectionQuery)
-  useEffect(() => {
-    const sync = () => setQueryCollection(readCollectionQuery())
-    sync()
-    window.addEventListener('popstate', sync)
-    return () => window.removeEventListener('popstate', sync)
-  }, [categoryId])
-  const selectedCollectionId = collectionId ?? queryCollection
-  const sectionRef = useRef<HTMLElement>(null)
+  const selectedCollectionId = collectionId ?? null
   const categoryHeadingRef = useRef<HTMLHeadingElement>(null)
   const categoryButtons = useRef<Record<string, HTMLAnchorElement | null>>({})
   const activeCategory = workCategories.find((category) => category.id === activeId)
@@ -815,28 +816,11 @@ export function Work({ categoryId, collectionId }: { categoryId?: string; collec
     })
   const [openProject, setOpenProject] = useState<number | null>(null)
   useEffect(() => { setOpenProject(null) }, [activeId, selectedCollectionId])
-
-  // Keep subcollections on the same route: instant navigation, with browser Back support.
-  const navigateCollection = (event: ReactMouseEvent<HTMLAnchorElement>, id: string | null) => {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || collectionId !== undefined) return
-    event.preventDefault()
-    const url = new URL(window.location.href)
-    if (id) url.searchParams.set('collection', id)
-    else url.searchParams.delete('collection')
-    window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`)
-    setOpenProject(null)
-    setQueryCollection(id)
-    requestAnimationFrame(() => {
-      categoryHeadingRef.current?.focus({ preventScroll: true })
-      sectionRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' })
-    })
-  }
   const ghostWords = workCategories.map((category) => tr(category.title))
   return (
     <>
       <style>{studioStyles}</style>
       <section
-        ref={sectionRef}
         id="selected-work"
         dir={rtl ? 'rtl' : 'ltr'}
         aria-labelledby={activeId ? "category-title" : "selected-work-title"}
@@ -925,7 +909,6 @@ export function Work({ categoryId, collectionId }: { categoryId?: string; collec
               <div className="sw-detail-head">
                 <a
                   href={activeCollection || invalidCollection ? `/work/${activeCategory.id}` : '/#selected-work'}
-                  onClick={activeCollection || invalidCollection ? (event) => navigateCollection(event, null) : undefined}
                   className="group/back mb-8 inline-flex items-center gap-3 rounded-full border border-[#051746]/20 min-h-[3.75rem] py-3.5 ps-4 pe-6 text-base font-bold sm:text-lg text-[#051746] transition-colors hover:border-signal hover:bg-signal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal"
                 >
                   <span
@@ -963,7 +946,6 @@ export function Work({ categoryId, collectionId }: { categoryId?: string; collec
                         index={index}
                         count={projectCount(collection.projects.length)}
                         href={collectionHref(activeCategory.id, collection.id)}
-                        onNavigate={(event) => navigateCollection(event, collection.id)}
                         setRef={() => {}}
                         className=""
                       />

@@ -3,7 +3,7 @@ import Lenis from 'lenis'
 import { ScrollTrigger, gsap, prefersReduced, setLenis, useGsap } from './lib/gsap'
 import { useLang } from './lib/i18n'
 import { ReadyCtx } from './lib/ready'
-import { scrollToHash } from './lib/scroll'
+import { initHistory, jumpTo, keepScrollCacheFresh, popEntry, pushEntry, scrollToHash } from './lib/scroll'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { Loader } from './components/Loader'
@@ -38,9 +38,22 @@ function useReveals(scope: RefObject<HTMLElement | null>, deps: unknown[], enabl
   }, deps)
 }
 
-function readLocation() {
-  if (typeof window === 'undefined') return { path: '/', hash: '' }
-  return { path: window.location.pathname.replace(/\/+$/, '') || '/', hash: window.location.hash }
+type AppLocation = {
+  path: string
+  search: string
+  hash: string
+  /** Saved scroll position to return to (Back/Forward); null opens the page at its top. */
+  restoreY: number | null
+}
+
+function readLocation(restoreY: number | null = null): AppLocation {
+  if (typeof window === 'undefined') return { path: '/', search: '', hash: '', restoreY }
+  return {
+    path: window.location.pathname.replace(/\/+$/, '') || '/',
+    search: window.location.search,
+    hash: window.location.hash,
+    restoreY,
+  }
 }
 
 // Keep App mounted while switching pages, so the intro only runs once.
@@ -54,6 +67,7 @@ export default function App() {
   const isHome = path === '/'
   const match = path.match(/^\/work\/([^/]+)$/)
   const category = workCategories.find((item) => item.id === match?.[1])
+  const collectionId = new URLSearchParams(location.search).get('collection') ?? undefined
 
   useEffect(() => {
     if (prefersReduced() || window.matchMedia('(pointer: coarse)').matches) return
@@ -86,9 +100,12 @@ export default function App() {
     }
   }, [])
 
-  // Intercept ordinary internal page links without reloading the document.
-  // Modifier clicks, downloads and new-tab links retain browser behavior.
+  // Intercept ordinary internal page links without reloading the document, including the
+  // Branding subcollections (/work/branding?collection=bags), so every page change goes through
+  // the one scroll reset below. Modifier clicks, downloads and new-tab links retain browser behavior.
   useEffect(() => {
+    initHistory()
+    const stopScrollCache = keepScrollCacheFresh()
     const onClick = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
       const link = event.target instanceof Element
@@ -109,29 +126,32 @@ export default function App() {
       if (destination === current.path && url.hash) return
       event.preventDefault()
       event.stopPropagation()
-      if (url.href !== window.location.href) {
-        window.history.pushState(null, '', url.pathname + url.search + url.hash)
-      }
+      if (url.href !== window.location.href) pushEntry(url.pathname + url.search + url.hash)
       setLocation(readLocation())
     }
-    const onPopState = () => setLocation(readLocation())
+    const onPopState = () => setLocation(readLocation(popEntry()))
     document.addEventListener('click', onClick, true)
     window.addEventListener('popstate', onPopState)
     return () => {
+      stopScrollCache()
       document.removeEventListener('click', onClick, true)
       window.removeEventListener('popstate', onPopState)
     }
   }, [])
 
+  // Runs once the new page is in the DOM and before it is painted: a new page opens at its top,
+  // a Back/Forward visit returns to where that entry was left, a link with a hash then glides there.
   useLayoutEffect(() => {
     if (!ready) return
+    const { restoreY, hash } = location
     smoothScroll.current?.resize()
-    smoothScroll.current?.scrollTo(0, { immediate: true, force: true })
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    jumpTo(restoreY ?? 0)
     main.current?.focus({ preventScroll: true })
     const frame = requestAnimationFrame(() => {
       ScrollTrigger.refresh()
-      if (location.hash) scrollToHash(location.hash)
+      // Pin spacers added by the refresh can make the page taller than at first jump.
+      if (restoreY !== null) jumpTo(restoreY)
+      else if (hash) scrollToHash(hash)
     })
     // Re-measure the scroll scenes when the page's height really changes (an image without a
     // reserved box, an opened article), once it has settled. Refreshing on every image load
@@ -178,7 +198,7 @@ export default function App() {
         {isHome ? (
           <Home />
         ) : category ? (
-          <Work key={category.id} categoryId={category.id} />
+          <Work key={category.id} categoryId={category.id} collectionId={collectionId} />
         ) : (
           <section
             dir={rtl ? 'rtl' : 'ltr'}
