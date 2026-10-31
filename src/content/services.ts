@@ -1,6 +1,16 @@
 import type { L } from '../lib/i18n'
 
-export type ServiceId = 'brands' | 'campaigns' | 'systems' | 'funnels' | 'automations' | 'digital' | 'growth'
+/**
+ * Main service categories shown on the website.
+ *
+ * We keep IDs that already exist in ServiceVisual so the
+ * existing visual/GSAP system continues working.
+ */
+export type ServiceId =
+  | 'brands'
+  | 'growth'
+  | 'systems'
+  | 'digital'
 
 export type Service = {
   id: ServiceId
@@ -10,123 +20,204 @@ export type Service = {
   includes: L[]
 }
 
-/** CMS collection: Services. Order is the order shown on the site. */
+/**
+ * CMS collection: Services.
+ *
+ * Website structure:
+ *
+ * 01 — Branding
+ * 02 — Marketing & Growth
+ * 03 — Systems & Automation
+ * 04 — Digital Experiences
+ */
 export const services: Service[] = [
   {
     id: 'brands',
-    title: { en: 'Brands', ar: 'العلامات' },
-    line: { en: 'Identities engineered to last decades, not seasons.', ar: 'هويات تُهندَس لتدوم عقودًا، لا مواسم.' },
-    detail: {
-      en: 'Positioning, naming, verbal and visual identity built as one structure, so every later decision has something solid to stand on.',
-      ar: 'تموضع وتسمية وهوية لفظية وبصرية تُبنى كهيكل واحد، ليجد كل قرار لاحق أرضًا صلبة يقف عليها.',
+
+    title: {
+      en: 'Branding',
+      ar: 'بناء العلامات التجارية',
     },
-    includes: [
-      { en: 'Positioning & narrative', ar: 'التموضع والسردية' },
-      { en: 'Naming', ar: 'التسمية' },
-      { en: 'Visual identity', ar: 'الهوية البصرية' },
-      { en: 'Brand guidelines', ar: 'دليل العلامة' },
-    ],
-  },
-  {
-    id: 'campaigns',
-    title: { en: 'Campaigns', ar: 'الحملات' },
+
     line: {
-      en: 'Integrated stories that move audiences and pipelines.',
-      ar: 'قصص متكاملة تحرّك الجمهور وتحرّك المبيعات.',
+      en: 'Brands built to be recognised, remembered and trusted.',
+      ar: 'علامات تجارية تُبنى لتُعرف وتُتذكر وتكسب الثقة.',
     },
+
     detail: {
-      en: 'One idea carried across film, social, media and activation, planned so each channel strengthens the others.',
-      ar: 'فكرة واحدة تمتد عبر الفيلم والمنصات الاجتماعية والإعلام والتفعيل، ومخطَّطة لتقوّي كل قناة ما سواها.',
+      en: 'We build brands from the strategic foundation to the final visual system — creating a clear identity that gives every campaign, product and digital experience a strong foundation.',
+      ar: 'نبني العلامات التجارية من الأساس الاستراتيجي وحتى النظام البصري الكامل، لنصنع هوية واضحة تمنح الحملات والمنتجات والتجارب الرقمية أساسًا قويًا ومتّسقًا.',
     },
+
     includes: [
-      { en: 'Campaign strategy', ar: 'استراتيجية الحملة' },
-      { en: 'Creative & production', ar: 'الإبداع والإنتاج' },
-      { en: 'Media planning', ar: 'التخطيط الإعلامي' },
-      { en: 'Measurement', ar: 'القياس' },
+      {
+        en: 'Brand strategy & positioning',
+        ar: 'استراتيجية العلامة والتموضع',
+      },
+      {
+        en: 'Naming & narrative',
+        ar: 'التسمية والسردية',
+      },
+      {
+        en: 'Visual identity',
+        ar: 'الهوية البصرية',
+      },
+      {
+        en: 'Brand guidelines',
+        ar: 'دليل العلامة التجارية',
+      },
     ],
   },
-  {
-    id: 'systems',
-    title: { en: 'Systems', ar: 'الأنظمة' },
-    line: {
-      en: 'Brand systems and operating systems for marketing teams.',
-      ar: 'أنظمة للعلامة وأنظمة تشغيل لفرق التسويق.',
-    },
-    detail: {
-      en: 'Design systems, content operations and playbooks that let a team produce consistent work without starting from zero each time.',
-      ar: 'أنظمة تصميم وعمليات محتوى وأدلة عمل تمكّن الفريق من إنتاج عمل متّسق دون البدء من الصفر في كل مرة.',
-    },
-    includes: [
-      { en: 'Design systems', ar: 'أنظمة التصميم' },
-      { en: 'Content operations', ar: 'عمليات المحتوى' },
-      { en: 'Templates & toolkits', ar: 'القوالب والأدوات' },
-      { en: 'Team playbooks', ar: 'أدلة عمل الفريق' },
-    ],
-  },
-  {
-    id: 'funnels',
-    title: { en: 'Funnels', ar: 'مسارات التحويل' },
-    line: { en: 'Acquisition engines optimized for revenue.', ar: 'محركات استحواذ مُحسَّنة لتحقيق الإيراد.' },
-    detail: {
-      en: 'Landing pages, offers, ads and follow-up designed as one path, from first attention to a measurable action.',
-      ar: 'صفحات هبوط وعروض وإعلانات ومتابعة تُصمَّم كمسار واحد، من أول انتباه إلى فعل قابل للقياس.',
-    },
-    includes: [
-      { en: 'Offer & journey design', ar: 'تصميم العرض والرحلة' },
-      { en: 'Landing pages', ar: 'صفحات الهبوط' },
-      { en: 'Paid acquisition', ar: 'الاستحواذ المدفوع' },
-      { en: 'Conversion optimisation', ar: 'تحسين التحويل' },
-    ],
-  },
-  {
-    id: 'automations',
-    title: { en: 'Automations', ar: 'الأتمتة' },
-    line: {
-      en: 'Workflows that remove manual drag from growth.',
-      ar: 'مسارات عمل تزيل العبء اليدوي من طريق النمو.',
-    },
-    detail: {
-      en: 'CRM flows, lead routing, messaging and reporting that run on their own, so people spend their time on judgement, not repetition.',
-      ar: 'مسارات إدارة العملاء وتوزيع الفرص والمراسلة والتقارير تعمل تلقائيًا، ليصرف الفريق وقته على التقدير لا على التكرار.',
-    },
-    includes: [
-      { en: 'CRM & lead routing', ar: 'إدارة العملاء وتوزيع الفرص' },
-      { en: 'WhatsApp & email flows', ar: 'مسارات واتساب والبريد' },
-      { en: 'Reporting', ar: 'التقارير' },
-      { en: 'AI-assisted workflows', ar: 'مسارات عمل مدعومة بالذكاء الاصطناعي' },
-    ],
-  },
-  {
-    id: 'digital',
-    title: { en: 'Digital Experiences', ar: 'التجارب الرقمية' },
-    line: { en: 'Sites, apps, and interactive products.', ar: 'مواقع وتطبيقات ومنتجات تفاعلية.' },
-    detail: {
-      en: 'Interfaces designed and built to carry the brand, load fast and make the next step obvious on any screen.',
-      ar: 'واجهات تُصمَّم وتُبنى لتحمل العلامة، وتُحمَّل بسرعة، وتجعل الخطوة التالية واضحة على أي شاشة.',
-    },
-    includes: [
-      { en: 'Websites', ar: 'المواقع' },
-      { en: 'Mobile & web apps', ar: 'تطبيقات الجوال والويب' },
-      { en: 'Interactive content', ar: 'المحتوى التفاعلي' },
-      { en: 'UX & UI design', ar: 'تصميم التجربة والواجهات' },
-    ],
-  },
+
   {
     id: 'growth',
-    title: { en: 'Growth Engines', ar: 'محركات النمو' },
-    line: { en: 'Compounding programs that learn and improve.', ar: 'برامج تراكمية تتعلّم وتتحسّن.' },
-    detail: {
-      en: 'Ongoing programs where each cycle of content, media and testing feeds the next, so results build instead of resetting.',
-      ar: 'برامج مستمرة تغذّي فيها كل دورة من المحتوى والإعلام والاختبار الدورة التالية، فتتراكم النتائج بدل أن تبدأ من جديد.',
+
+    title: {
+      en: 'Marketing & Growth',
+      ar: 'التسويق والنمو',
     },
+
+    line: {
+      en: 'Campaigns, funnels and growth systems designed to turn attention into revenue.',
+      ar: 'حملات ومسارات نمو مصممة لتحويل الانتباه إلى نتائج وإيرادات.',
+    },
+
+    detail: {
+      en: 'We connect campaigns, acquisition funnels and ongoing growth programs into one measurable system — attracting the right audience, converting demand and continuously improving performance.',
+      ar: 'نربط الحملات ومسارات الاستحواذ وبرامج النمو المستمرة ضمن نظام واحد قابل للقياس، لجذب الجمهور المناسب وتحويل الاهتمام إلى طلب وتحسين الأداء باستمرار.',
+    },
+
     includes: [
-      { en: 'Always-on content', ar: 'محتوى مستمر' },
-      { en: 'Performance media', ar: 'إعلام الأداء' },
-      { en: 'Experimentation', ar: 'التجريب' },
-      { en: 'Insight loops', ar: 'حلقات التعلّم' },
+      {
+        en: 'Campaign strategy & creative',
+        ar: 'استراتيجية الحملات والإبداع',
+      },
+      {
+        en: 'Funnels & landing pages',
+        ar: 'مسارات التحويل وصفحات الهبوط',
+      },
+      {
+        en: 'Paid acquisition',
+        ar: 'الاستحواذ المدفوع',
+      },
+      {
+        en: 'Content & performance marketing',
+        ar: 'المحتوى وتسويق الأداء',
+      },
+      {
+        en: 'Conversion optimisation',
+        ar: 'تحسين معدلات التحويل',
+      },
+      {
+        en: 'Growth experiments',
+        ar: 'تجارب النمو',
+      },
+      {
+        en: 'Analytics & insight loops',
+        ar: 'التحليلات وحلقات التعلّم',
+      },
+    ],
+  },
+
+  {
+    id: 'systems',
+
+    title: {
+      en: 'Systems & Automation',
+      ar: 'الأنظمة والأتمتة',
+    },
+
+    line: {
+      en: 'Connected systems that remove repetitive work and keep growth moving.',
+      ar: 'أنظمة مترابطة تقلّل العمل المتكرر وتحافظ على استمرارية النمو.',
+    },
+
+    detail: {
+      en: 'We design the operational infrastructure behind marketing and sales — connecting CRM, lead management, communication, reporting and AI-powered automation into workflows that operate reliably at scale.',
+      ar: 'نصمم البنية التشغيلية خلف التسويق والمبيعات، ونربط إدارة العملاء والفرص والتواصل والتقارير والأتمتة المدعومة بالذكاء الاصطناعي ضمن مسارات عمل تعمل بكفاءة وقابلية للتوسع.',
+    },
+
+    includes: [
+      {
+        en: 'CRM systems',
+        ar: 'أنظمة إدارة العملاء',
+      },
+      {
+        en: 'Lead routing & pipelines',
+        ar: 'توزيع العملاء ومسارات المبيعات',
+      },
+      {
+        en: 'WhatsApp & email automation',
+        ar: 'أتمتة واتساب والبريد الإلكتروني',
+      },
+      {
+        en: 'Marketing operations',
+        ar: 'عمليات التسويق',
+      },
+      {
+        en: 'Reporting & dashboards',
+        ar: 'التقارير ولوحات البيانات',
+      },
+      {
+        en: 'AI-assisted workflows',
+        ar: 'مسارات عمل مدعومة بالذكاء الاصطناعي',
+      },
+      {
+        en: 'Internal systems & playbooks',
+        ar: 'الأنظمة الداخلية وأدلة العمل',
+      },
+    ],
+  },
+
+  {
+    id: 'digital',
+
+    title: {
+      en: 'Digital Experiences',
+      ar: 'التجارب الرقمية',
+    },
+
+    line: {
+      en: 'Websites, platforms and digital products built around real user behaviour.',
+      ar: 'مواقع ومنصات ومنتجات رقمية مصممة حول سلوك المستخدم الحقيقي.',
+    },
+
+    detail: {
+      en: 'We design and build digital experiences that carry the brand, communicate clearly and guide people naturally toward the next action — across websites, applications and interactive products.',
+      ar: 'نصمم ونبني تجارب رقمية تعكس العلامة بوضوح، وتوصل الرسالة بكفاءة، وتقود المستخدم بشكل طبيعي نحو الخطوة التالية عبر المواقع والتطبيقات والمنتجات التفاعلية.',
+    },
+
+    includes: [
+      {
+        en: 'Websites',
+        ar: 'المواقع الإلكترونية',
+      },
+      {
+        en: 'Landing experiences',
+        ar: 'تجارب صفحات الهبوط',
+      },
+      {
+        en: 'Web & mobile applications',
+        ar: 'تطبيقات الويب والجوال',
+      },
+      {
+        en: 'UX & UI design',
+        ar: 'تصميم تجربة وواجهة المستخدم',
+      },
+      {
+        en: 'Interactive experiences',
+        ar: 'التجارب التفاعلية',
+      },
+      {
+        en: 'Digital product design',
+        ar: 'تصميم المنتجات الرقمية',
+      },
     ],
   },
 ]
 
-export const serviceById = (id: ServiceId) => services.find((s) => s.id === id)!
-export const num = (i: number) => String(i + 1).padStart(2, '0')
+export const serviceById = (id: ServiceId) =>
+  services.find((service) => service.id === id)!
+
+export const num = (i: number) =>
+  String(i + 1).padStart(2, '0')

@@ -71,9 +71,7 @@ export function InsightRow({ item }: { item: Insight }) {
 
           <div className="flex items-center gap-2 md:gap-4">
             <p className="whitespace-nowrap text-[0.6875rem] font-semibold text-navy/85 md:text-sm md:font-bold lg:text-base">
-              <span className={lang === 'en' ? 'latin' : ''}>
-                {item.minutes} {tr(ui.insights.min)}
-              </span>
+             
             </p>
 
             <button
